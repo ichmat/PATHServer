@@ -1,7 +1,108 @@
-﻿namespace PATHServer
+﻿using SocketLibrary;
+using System.Globalization;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Xml.Linq;
+
+namespace PATHServer
 {
     public class Server
     {
+        private readonly ServerSocket _server;
+
+        public const int PORT = 1530;
+
+        public delegate void ServerLog(string log);
+
+        public event ServerLog? OnServerLog;
+
+        public Server()
+        {
+            _server = new ServerSocket(PORT);
+            _server.ServerStarted = ServerStarted;
+            _server.AcceptedClient = AcceptedClient;
+            _server.RecieveNameClient = RecieveNameClient;
+            _server.RecieveData = RecieveData;
+            _server.ClientDisconnected = ClientDisconnected;
+            _server.ErrorLog = ErrorLog;
+        }
+#if DEBUG
+        public void StartTest()
+        {
+            StartSockerServer();
+        }
+
+#endif
+
+        public void Start()
+        {
+            // Vérifier si on a les crédential de connexion WIFI
+
+            // Si oui : 
+            ConnectToWifi();
+
+            // si non : 
+            SearchAndWaitingClientInfo();
+        }
+
+        public void Stop()
+        {
+            // Dispose Socket connexion
+        }   
+
+        private void ConnectToWifi()
+        {
+
+        }
+
+        private void SearchAndWaitingClientInfo()
+        {
+            // activé le HotPost WIFI 
+            // attendre une connexion avec l'application
+            // echange des credentials WIFI
+            ConnectToWifi();
+        }
+
+        #region SERVER
+
+        private void StartSockerServer()
+        {
+            _server.Start();
+        }
+
+        private void ServerStarted()
+        {
+            OnServerLog?.Invoke("serveur started");
+        }
+
+        private void AcceptedClient(string ip_client)
+        {
+            OnServerLog?.Invoke("AcceptedClient : " + ip_client);
+            _server.SendValidation(ip_client);
+        }
+
+        private void RecieveNameClient(string name, string ip_client)
+        {
+            OnServerLog?.Invoke("RecieveNameClient, ip_client : " + ip_client + ", name : " + name);
+        }
+
+        private void RecieveData(string ip_client, string data)
+        {
+            OnServerLog?.Invoke("RecieveData, ip_client : " + ip_client + ", data : " + data);
+        }
+
+        private void ClientDisconnected(string ip_client)
+        {
+            OnServerLog?.Invoke("ClientDisconnected, ip_client : " + ip_client);
+        }
+
+        private void ErrorLog(string error)
+        {
+            OnServerLog?.Invoke("ErrorLog, error : " + error);
+        }
+
+        #endregion
 
     }
 }
