@@ -30,7 +30,7 @@ namespace SocketLibrary
 
         public byte[] ToByte()
         {
-            string compressedString = MARKUP_SENDER + Sender + MARKUP_TIMESEND + TimeSend.ToString("g", new CultureInfo("en-US")) + MARKUP_CONTENT + Content + MARKUP_END;
+            string compressedString = MARKUP_SENDER + Sender + MARKUP_TIMESEND + TimeSend.ToString("g", new CultureInfo("fr-FR")) + MARKUP_CONTENT + Content + MARKUP_END;
             return Encoding.UTF8.GetBytes(compressedString);
         }
        

@@ -5,6 +5,7 @@ namespace ServeurTest
     public class ServerTest
     {
         private static Server server;
+
         static void Main(string[] args)
         {
             Console.WriteLine("This is Serveur");

@@ -1,7 +1,9 @@
 ﻿using SocketLibrary;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Xml.Linq;
 
@@ -31,6 +33,7 @@ namespace PATHServer
         public void StartTest()
         {
             StartSockerServer();
+            //UpdateData();
         }
 
 #endif
@@ -53,7 +56,6 @@ namespace PATHServer
 
         private void ConnectToWifi()
         {
-
         }
 
         private void SearchAndWaitingClientInfo()
@@ -63,6 +65,36 @@ namespace PATHServer
             // echange des credentials WIFI
             ConnectToWifi();
         }
+
+        #region BDD
+        /*
+        private bool UpdateData()
+        {
+            string dbName = "TestDatabase.db";
+            if (File.Exists(dbName))
+            {
+                File.Delete(dbName);
+            }
+            using (var dbContext = new MyDbContext())
+            {
+                //Ensure database is created
+                dbContext.Database.EnsureCreated();
+                if (!dbContext.Sensors.Any())
+                {
+                    dbContext.Sensors.AddRange(new SensorData[]
+                    {
+                             new SensorData{ SensorId=1, Data="8000", DateTimeAdd = DateTime.Now },
+                        });
+                    dbContext.SaveChanges();
+                }
+                foreach (var sensor in dbContext.Sensors)
+                {
+                    OnServerLog?.Invoke($"SensorId={sensor.SensorId}\t={sensor.Data}\t{sensor.DateTimeAdd}");
+                }
+            }
+        }
+        */
+        #endregion
 
         #region SERVER
 
@@ -104,5 +136,20 @@ namespace PATHServer
 
         #endregion
 
+        #region WIFI
+
+        private string ExecuteCommand(string arg)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = arg, };
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardOutput = true;
+            Process proc = new Process() { StartInfo = startInfo, };
+            proc.Start();
+            string strOutput = proc.StandardOutput.ReadToEnd();
+            proc.WaitForExit();
+            return strOutput;
+        }
+
+        #endregion
     }
 }
