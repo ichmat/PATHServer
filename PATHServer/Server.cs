@@ -24,7 +24,6 @@ namespace PATHServer
 #if DEBUG
         public void StartTest()
         {
-            UpdateTestData();
         }
 
 #endif
@@ -70,7 +69,7 @@ namespace PATHServer
             {
                 File.Delete(dbName);
             }
-            using (var dbContext = new MyDbContext())
+            /*using (var dbContext = new MyDbContext())
             {
                 //Ensure database is created
                 dbContext.Database.EnsureCreated();
@@ -86,7 +85,7 @@ namespace PATHServer
                 {
                     OnServerLog?.Invoke($"SensorId={sensor.SensorId}\t={sensor.Data}\t{sensor.DateTimeAdd}");
                 }
-            }
+            }*/
         }
         
         #endregion

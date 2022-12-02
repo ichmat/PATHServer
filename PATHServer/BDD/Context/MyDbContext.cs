@@ -5,7 +5,7 @@ using System.Reflection.Metadata;
 
 public class MyDbContext : DbContext
 {
-    public DbSet<SensorData> Sensors { get; set; }
+    public DbSet<PATHUser> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
