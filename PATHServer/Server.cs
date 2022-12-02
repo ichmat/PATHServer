@@ -1,4 +1,4 @@
-﻿using SocketLibrary;
+﻿using PATHServer.BDD.Models;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -11,10 +11,7 @@ namespace PATHServer
 {
     public class Server
     {
-        private readonly ServerSocket _server;
-
         public const int PORT = 8080;
-        public const string ip_server = "127.0.0.1";
 
         public delegate void ServerLog(string log);
 
@@ -22,19 +19,12 @@ namespace PATHServer
 
         public Server()
         {
-            _server = new ServerSocket(ip_server, PORT);
-            _server.ServerStarted = ServerStarted;
-            _server.AcceptedClient = AcceptedClient;
-            _server.RecieveNameClient = RecieveNameClient;
-            _server.RecieveData = RecieveData;
-            _server.ClientDisconnected = ClientDisconnected;
-            _server.ErrorLog = ErrorLog;
+            
         }
 #if DEBUG
         public void StartTest()
         {
-            StartSockerServer();
-            //UpdateData();
+            UpdateTestData();
         }
 
 #endif
@@ -67,9 +57,13 @@ namespace PATHServer
             ConnectToWifi();
         }
 
+        #region WEB_API
+
+        #endregion
+
         #region BDD
-        /*
-        private bool UpdateData()
+        
+        private void UpdateTestData()
         {
             string dbName = "TestDatabase.db";
             if (File.Exists(dbName))
@@ -94,47 +88,7 @@ namespace PATHServer
                 }
             }
         }
-        */
-        #endregion
-
-        #region SERVER
-
-        private void StartSockerServer()
-        {
-            _server.Start();
-        }
-
-        private void ServerStarted()
-        {
-            OnServerLog?.Invoke("serveur started");
-        }
-
-        private void AcceptedClient(string ip_client)
-        {
-            OnServerLog?.Invoke("AcceptedClient : " + ip_client);
-            _server.SendValidation(ip_client);
-        }
-
-        private void RecieveNameClient(string name, string ip_client)
-        {
-            OnServerLog?.Invoke("RecieveNameClient, ip_client : " + ip_client + ", name : " + name);
-        }
-
-        private void RecieveData(string ip_client, string data)
-        {
-            OnServerLog?.Invoke("RecieveData, ip_client : " + ip_client + ", data : " + data);
-        }
-
-        private void ClientDisconnected(string ip_client)
-        {
-            OnServerLog?.Invoke("ClientDisconnected, ip_client : " + ip_client);
-        }
-
-        private void ErrorLog(string error)
-        {
-            OnServerLog?.Invoke("ErrorLog, error : " + error);
-        }
-
+        
         #endregion
 
         #region WIFI

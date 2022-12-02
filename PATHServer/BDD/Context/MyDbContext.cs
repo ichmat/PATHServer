@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PATHServer;
+using PATHServer.BDD.Models;
 using System.Reflection;
 using System.Reflection.Metadata;
 

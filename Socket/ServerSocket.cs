@@ -15,7 +15,7 @@ namespace SocketLibrary
 {
     public class ServerSocket
     {
-        private readonly Socket server;
+        private readonly System.Net.Sockets.Socket server;
         private ConcurrentDictionary<string, Socket> clients = new ConcurrentDictionary<string, Socket>();
         private ConcurrentDictionary<string, List<byte>> dataclients = new ConcurrentDictionary<string,List<byte>>();
         private ConcurrentDictionary<string, Socket> waitingclients = new ConcurrentDictionary<string, Socket>();

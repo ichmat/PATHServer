@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PATHServer
+namespace PATHServer.BDD.Models
 {
     public class SensorData
     {
