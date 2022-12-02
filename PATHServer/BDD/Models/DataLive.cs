@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+
+namespace PATHServer.BDD.Models
+{
+    public class DataLive
+    {
+        [Key]
+        public int dl_id { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string dl_name { get; set; }
+
+        public string dl_val_int { get; set; }
+
+        public float dl_val_double { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string dl_val_string { get; set; }
+
+        [Required]
+        public DateTime dl_val_datetime { get; set; }
+
+    }
+}
