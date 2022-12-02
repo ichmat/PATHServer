@@ -13,7 +13,8 @@ namespace PATHServer
     {
         private readonly ServerSocket _server;
 
-        public const int PORT = 1530;
+        public const int PORT = 8080;
+        public const string ip_server = "127.0.0.1";
 
         public delegate void ServerLog(string log);
 
@@ -21,7 +22,7 @@ namespace PATHServer
 
         public Server()
         {
-            _server = new ServerSocket(PORT);
+            _server = new ServerSocket(ip_server, PORT);
             _server.ServerStarted = ServerStarted;
             _server.AcceptedClient = AcceptedClient;
             _server.RecieveNameClient = RecieveNameClient;

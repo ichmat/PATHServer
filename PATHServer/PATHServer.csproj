@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Graph" Version="4.48.0" />
   </ItemGroup>
 
   <ItemGroup>

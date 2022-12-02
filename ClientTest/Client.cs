@@ -35,11 +35,10 @@ internal class Client
 
     static void startClient()
     {
-        IPHostEntry hostEntry = Dns.GetHostEntry("localhost");
-
         // Get host related information.
-        string ip = hostEntry.AddressList[1].ToString();
-        var port = Server.PORT;
+
+        string ip = "127.0.0.1";
+        var port = 8080;
         _client = CreateClient(port, ip);
 
         if (!_client.TryStart())
@@ -48,13 +47,13 @@ internal class Client
         }
         else
         {
+            _client.SendName();
         }
     }
 
     static void ClientConnected()
     {
         Console.WriteLine("Connected from the server");
-        _client.SendName();
     }
 
     static void ClientDisconnected()
@@ -74,7 +73,7 @@ internal class Client
 
     static void RecieveData(string ip_server, string data)
     {
-        Console.WriteLine("RecieveData ");
+        Console.WriteLine("RecieveData : " + data);
     }
 
     static void IncommingData(int sizeActualMessage, int sizeFullMessage)

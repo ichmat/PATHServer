@@ -78,10 +78,10 @@ namespace SocketLibrary
         /// Initializes a new instance of the <see cref="ServerSocket"/> class.
         /// </summary>
         /// <param name="port">The port.</param>
-        public ServerSocket(int port)
+        public ServerSocket(string ip_server, int port)
         {
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint ip = new IPEndPoint(IPAddress.Any, port);
+            IPEndPoint ip = new IPEndPoint(IPAddress.Parse(ip_server), port);
             server.Bind(ip);
         }
 
