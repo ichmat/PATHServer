@@ -4,10 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PATHServer.BDD.Models
 {
-    public class DataHistoryString : DataHistory
+    public class DataHistoryString 
     {
+        [Required]
+        [ForeignKey("dh_id")]
+        public int dh_id { get; set; }
+
+        [Required]
+        public string dh_string_value { get; set; }
     }
 }
