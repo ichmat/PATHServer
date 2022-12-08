@@ -1,7 +1,9 @@
 ﻿using PATHServer.BDD.Models;
+using PATHServer.CommandEnv;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
 using System.Text;
@@ -24,6 +26,16 @@ namespace PATHServer
 #if DEBUG
         public void StartTest()
         {
+            SearchWifi();
+            HttpClient client = new HttpClient();
+            /*try
+            {
+                await client.GetStringAsync("http://172.20.10.12/door/open");
+            }
+            catch(HttpRequestException ex)
+            {
+                throw ex;
+            }*/
         }
 
 #endif
@@ -92,16 +104,10 @@ namespace PATHServer
 
         #region WIFI
 
-        private string ExecuteCommand(string arg)
+        private void SearchWifi()
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = arg, };
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            Process proc = new Process() { StartInfo = startInfo, };
-            proc.Start();
-            string strOutput = proc.StandardOutput.ReadToEnd();
-            proc.WaitForExit();
-            return strOutput;
+            CmdWindows w = new CmdWindows();
+            string[] wifis = w.GetAllWifiName();
         }
 
         #endregion

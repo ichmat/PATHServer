@@ -8,6 +8,8 @@ namespace PATHServer.CommandEnv
 {
     public abstract class CmdEnvironnement
     {
+        public abstract string CmdExecution();
+
         public abstract string[] GetAllWifiName();
 
         public abstract bool TryConnectWifi(string wifi_name);
