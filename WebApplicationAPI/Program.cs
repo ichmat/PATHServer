@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PATHServer;
 using System.Reflection;
+using System.Threading;
 
 namespace WebApplicationAPI
 {
     public class Program
     {
         public static Server _server;
+
 
         public static void Main(string[] args)
         {
@@ -18,11 +21,22 @@ namespace WebApplicationAPI
                .Build();
 
             _server = new Server();
+            _server.OnServerLog += _server_OnServerLog;
 #if DEBUG
-            _server.StartTest();
+            _server.StartTest().Wait();
 #else
             _server.Start();
 #endif
+            while(true)
+            {
+                Console.WriteLine("appuyer sur entrer pour envoyer un message ...");
+                Console.ReadKey();
+                _server.TestSendMessage().Wait();
+            }
+           
+            ManualResetEvent _manualResetEvent = new ManualResetEvent(false);
+            _manualResetEvent.Reset();
+            _manualResetEvent.WaitOne();
             builder.Services.AddDbContext<MyDbContext>();
 
             // Add services to the container.
@@ -66,6 +80,11 @@ namespace WebApplicationAPI
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void _server_OnServerLog(string log)
+        {
+            Console.WriteLine(log);
         }
     }
 }
