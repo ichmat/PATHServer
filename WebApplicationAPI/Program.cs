@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using PATHServer;
 using System.Reflection;
 
@@ -11,14 +12,20 @@ namespace WebApplicationAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            IConfiguration configuration = new ConfigurationBuilder()
+               .AddJsonFile("appsettings.json", true, true)
+               .Build();
+
             _server = new Server();
 #if DEBUG
             _server.StartTest();
 #else
             _server.Start();
 #endif
-            // Add services to the container.
+            builder.Services.AddDbContext<MyDbContext>();
 
+            // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
