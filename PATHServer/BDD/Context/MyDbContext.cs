@@ -6,6 +6,16 @@ using System.Reflection.Metadata;
 public class MyDbContext : DbContext
 {
     public DbSet<PATHUser> Users { get; set; }
+    public DbSet<KeyConnexion> Keys { get; set; }
+    public DbSet<ActionHistoryInfo> ActionHistoryInfos { get; set; }
+    public DbSet<ActionHistory> ActionHistories { get; set; }
+    public DbSet<Node> Nodes { get; set; }
+    public DbSet<DataInfo> DataInfos { get; set; }
+    public DbSet<DataHistory> DataHistories { get; set; }
+    public DbSet<DataHistoryDouble> DataHistoryDoubles { get; set; }
+    public DbSet<DataHistoryDate> DataHistoryDates { get; set; }
+    public DbSet<DataHistoryInt> DataHistoryInts { get; set; }
+    public DbSet<DataHistoryString> DataHistoryStrings { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -18,13 +28,6 @@ public class MyDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Map table names
-        modelBuilder.Entity<SensorData>().ToTable("Blogs", "test");
-        modelBuilder.Entity<SensorData>(entity =>
-        {
-            entity.HasKey(e => e.Data);
-            entity.HasIndex(e => e.SensorId).IsUnique();
-            entity.Property(e => e.DateTimeAdd).HasDefaultValueSql("CURRENT_TIMESTAMP");
-        });
         base.OnModelCreating(modelBuilder);
     }
 }

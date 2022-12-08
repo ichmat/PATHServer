@@ -46,19 +46,13 @@ namespace WebApplicationAPI.Controllers
         /// <summary>
         /// Créer un utilisateur
         /// </summary>
-        /// <param name="connexionId">La clé de connexion</param>
-        /// <param name="surname"></param>
-        /// <param name="name"></param>
-        /// <param name="email"></param>
         /// <returns>l'id d'utilisateur</returns>
         /// <response code="401">La clé de connexion a été refusé</response>
         /// <response code="400">Entrés invalide</response>
         [HttpGet("ping")]
         public async Task<IActionResult> Ping()
         {
-            var u = "ca marche ! ";
-           // await _context.SaveChangesAsync();
-            return Ok(u);
+            return Ok();
         }
 
 

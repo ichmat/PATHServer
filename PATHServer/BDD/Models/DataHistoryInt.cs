@@ -8,11 +8,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PATHServer.BDD.Models
 {
-    public class DataHistoryInt
+    public class DataHistoryInt : DataHistory
     {
-        [Required]
+        /*[Required]
         [ForeignKey("dh_id")]
-        public int dh_id { get; set; }
+        public int dh_id { get; set; }*/
 
         [Required]
         public int dh_int_value { get; set; }

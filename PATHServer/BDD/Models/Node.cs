@@ -15,6 +15,5 @@ namespace PATHServer.BDD.Models
         [Required]
         [MaxLength(50)]
         public string node_name { get; set; }
-
     }
 }

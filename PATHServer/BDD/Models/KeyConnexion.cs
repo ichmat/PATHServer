@@ -28,7 +28,7 @@ namespace PATHServer.BDD.Models
         public DateTime key_quotaRefresh { get; set; }
 
         [Required]
-        [ForeignKey("pu_id")]
+        [ForeignKey("PATHUser")]
         public int pu_id { get; set; }
     }
 }

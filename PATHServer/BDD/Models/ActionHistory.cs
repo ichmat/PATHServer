@@ -17,11 +17,11 @@ namespace PATHServer.BDD.Models
         public DateTime ah_date { get; set; }
 
         [Required]
-        [ForeignKey("ahi_id")]
+        [ForeignKey("ActionHistoryInfo")]
         public int ahi_id { get; set; }
 
         [Required]
-        [ForeignKey("pu_id")]
+        [ForeignKey("PATHUser")]
         public int pu_id { get; set; }
     }
 }
