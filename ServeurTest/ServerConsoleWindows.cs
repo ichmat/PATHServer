@@ -13,7 +13,7 @@ namespace ServeurTest
         {
             Console.WriteLine("This is Serveur");
             server = CreateServer();
-            server.StartTest();
+           // server.StartTest();
 
             ManualResetEvent keepAlive = new ManualResetEvent(true);
             keepAlive.Reset();

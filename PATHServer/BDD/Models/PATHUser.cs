@@ -23,7 +23,11 @@ namespace PATHServer.BDD.Models
         [Required]
         [MaxLength(255)]
         public string pu_surname { get; set; }
-        
+
+        [Required]
+        [MaxLength(255)]
+        public string pu_password { get; set; }
+
         [Required]
         public bool pu_admin { get; set; }
 

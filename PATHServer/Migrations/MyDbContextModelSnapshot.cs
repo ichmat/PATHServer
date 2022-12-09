@@ -161,6 +161,11 @@ namespace PATHServer.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("pu_password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("pu_surname")
                         .IsRequired()
                         .HasMaxLength(255)

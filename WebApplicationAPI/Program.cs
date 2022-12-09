@@ -18,10 +18,10 @@ namespace WebApplicationAPI
                .AddJsonFile("appsettings.json", true, true)
                .Build();
 
-            Server.instance = new Server();
-            Server.instance.OnServerLog += _server_OnServerLog;
+            Server instance = new Server();
+            instance.OnServerLog += _server_OnServerLog;
 #if DEBUG
-            Server.instance.StartTest().Wait();
+            instance.StartTest().Wait();
 #else
             _server.Start();
 #endif
