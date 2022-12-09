@@ -8,24 +8,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PATHServer.BDD.Models
 {
-    public class ActionHistory
+    public class Action
     {
         [Key]
         public int ah_id { get; set; }
 
-        [Required]
-        public DateTime ah_date { get; set; }
 
         [Required]
-        [ForeignKey("ActionHistoryInfo")]
-        public int ahi_id { get; set; }
+        public int act_type_data { get; set; }
+
+        public InfoTypeData ActTypeData { get => (InfoTypeData)act_type_data; }
+
 
         [Required]
-        [ForeignKey("PATHUser")]
-        public int pu_id { get; set; }
-
-        [Required]
-        [ForeignKey("Action")]
-        public int ah_id { get; set; }
+        public string act_name { get; set; }
     }
 }
