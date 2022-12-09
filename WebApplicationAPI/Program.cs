@@ -9,7 +9,6 @@ namespace WebApplicationAPI
 {
     public class Program
     {
-        
 
         public static void Main(string[] args)
         {
@@ -19,10 +18,10 @@ namespace WebApplicationAPI
                .AddJsonFile("appsettings.json", true, true)
                .Build();
 
-            _server = new Server();
-            _server.OnServerLog += _server_OnServerLog;
+            Server.instance = new Server();
+            Server.instance.OnServerLog += _server_OnServerLog;
 #if DEBUG
-            _server.StartTest().Wait();
+            Server.instance.StartTest().Wait();
 #else
             _server.Start();
 #endif

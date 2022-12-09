@@ -15,14 +15,21 @@ using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Server;
 using MQTTnet.Protocol;
+using PATHServer.ArduinoAction;
+using System.Text.Unicode;
+using Microsoft.EntityFrameworkCore;
 
 namespace PATHServer
 {
     public class Server
     {
+        public static Server instance;
+
         public const int PORT = 8080;
 
         private MqttServer _mqttServer;
+
+        private ArdCom _ardCom;
 
         public delegate void ServerLog(string log);
 
@@ -30,7 +37,7 @@ namespace PATHServer
 
         public Server()
         {
-            
+            _ardCom = new ArdCom();
         }
 #if DEBUG
         public async Task StartTest()
@@ -39,6 +46,11 @@ namespace PATHServer
         }
 
 #endif
+
+        public void Log(string message)
+        {
+            OnServerLog?.Invoke(message);
+        }
 
         public void Start()
         {
@@ -68,7 +80,21 @@ namespace PATHServer
             ConnectToWifi();
         }
 
-        #region WEB_API
+        #region BDD_COMMUNICATION
+
+        public MyDbContext? _context = null;
+
+        public MyDbContext ConnectToBdd()
+        {
+            _context = new MyDbContext();
+            _context.Database.EnsureCreated();
+            return _context;
+        }
+
+        public void DisconnectToBdd()
+        {
+            _context?.Dispose();
+        }
 
         #endregion
 
@@ -91,7 +117,14 @@ namespace PATHServer
 
         private Task _mqttServer_ClientDisconnectedAsync(ClientDisconnectedEventArgs arg)
         {
-            OnServerLog?.Invoke("Disconnected client");
+            if (_ardCom.Deconnexion(arg.ClientId))
+            {
+                OnServerLog?.Invoke("Disconnected client");
+            }
+            else
+            {
+                OnServerLog?.Invoke("Disconnected client without any validation");
+            }
             return Task.CompletedTask;
         }
 
@@ -107,16 +140,26 @@ namespace PATHServer
             }
         }
 
-        private Task _mqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs arg)
+        private async Task _mqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs arg)
         {
-            OnServerLog?.Invoke("topic : " + arg.ApplicationMessage.Topic + " message " + System.Text.Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
-            return Task.CompletedTask;
+            await _ardCom.RecieveMessage(arg.ClientId,
+                arg.ApplicationMessage.Topic,
+                UTF8Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
         }
 
         private Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
         {
-            arg.ReasonCode = MqttConnectReasonCode.Success;
-            OnServerLog?.Invoke("connected client");
+            if (_ardCom.NewConnection(arg.ClientId))
+            {
+                arg.ReasonCode = MqttConnectReasonCode.Success;
+                OnServerLog?.Invoke("connected client");
+            }
+            else
+            {
+                arg.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+                OnServerLog?.Invoke("disconnected client");
+            }
+
             return Task.CompletedTask;
         }
 

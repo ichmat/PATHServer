@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace PATHServer.BDD.Models
 {
@@ -15,5 +16,11 @@ namespace PATHServer.BDD.Models
         [Required]
         [MaxLength(50)]
         public string node_name { get; set; }
+
+        [Required]
+        [DisplayName("node_type_data")]
+        public int node_type_data { get; set; }
+
+        public NodeTypeData NodeTypeData { get => (NodeTypeData)node_type_data; }
     }
 }

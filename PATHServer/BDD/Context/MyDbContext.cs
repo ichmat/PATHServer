@@ -16,6 +16,7 @@ public class MyDbContext : DbContext
     public DbSet<DataHistoryDate> DataHistoryDates { get; set; }
     public DbSet<DataHistoryInt> DataHistoryInts { get; set; }
     public DbSet<DataHistoryString> DataHistoryStrings { get; set; }
+    public DbSet<DataHistoryBool> DataHistoryBools { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
