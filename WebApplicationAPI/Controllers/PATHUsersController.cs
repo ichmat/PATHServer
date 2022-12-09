@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PATHServer.BDD.Models;
+using PATHServer.Migrations;
 
 namespace WebApplicationAPI.Controllers
 {
@@ -59,6 +61,7 @@ namespace WebApplicationAPI.Controllers
             return Ok(u);
         }
 
+            
         /// <summary>
         /// connecte un utilisateur
         /// </summary>
@@ -69,10 +72,23 @@ namespace WebApplicationAPI.Controllers
         /// <returns>l'id de l'utilisateur connecté</returns>
         /// <response code="401">La clé de connexion a été refusé</response>
         /// <response code="400">Entrés invalide</response>
-        [HttpGet("connect")]
-        public async Task<IActionResult> ConnectUser(string pass, string surname, string name, string email)
+        [HttpPost("connect")]
+        public async Task<IActionResult> ConnectUser(string pass, string name)
         {
-            PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_surname == surname || x.pu_name == name || x.pu_email == email || x.pu_password == pass);
+            PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_name == name || x.pu_password == pass);
+
+            List<data> _data = new List<data>();
+
+            _data.Add(new data()
+            {
+                Id = nd.pu_id,
+                SSN = 2,
+                Message = "A Message"
+            });
+
+            string json = JsonSerializer.Serialize(_data);
+
+
 
             if (nd == null)
             {
@@ -80,7 +96,7 @@ namespace WebApplicationAPI.Controllers
             }
             else
             {
-                return Ok(nd.pu_id + "Utilisateur est bien connecté");
+                return Ok(output);
             }
         }
 

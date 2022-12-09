@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PATHServer.BDD.Models
 {
-    public class ActionHistory
+    public class ActionHistory 
     {
         [Key]
         public int ah_id { get; set; }
