@@ -16,9 +16,12 @@ namespace PATHServer.ArduinoAction
         private const string TOPIC_INIT = "init";
         private const string TOPIC_VALIDATE = "validate";
 
+        private readonly Dictionary<string, NodeTypeData> actions;
+
         public ArdCom() 
         {
             validated = new Dictionary<string, bool>();
+            actions = new Dictionary<string, NodeTypeData>();
         }
 
         public bool NewConnection(string userID)
@@ -56,8 +59,10 @@ namespace PATHServer.ArduinoAction
             switch (topic)
             {
                 case TOPIC_INIT:
-                    await Init_Nodes(dbContext, message); break;
+                    await InitNodes(dbContext, message); 
+                    break;
                 default:
+                    await NodeInfo(dbContext, topic, message);
                     break;
             }
             return true;
@@ -66,7 +71,7 @@ namespace PATHServer.ArduinoAction
         #region MESSAGE_ACTION
 
         private const char SEPARATOR_INIT_NODE = ';';
-        private const char SEPARATOR_INIT_VALUE = ',';
+        private const char SEPARATOR_INIT_VALUE = ':';
 
         private async Task NodeInfo(MyDbContext dbContext, string topic, string message)
         {
@@ -77,7 +82,7 @@ namespace PATHServer.ArduinoAction
                 {
                     if(ArdConverter.TryConvertData(find.NodeTypeData, message, out object? value))
                     {
-
+                        await CreateHistory(dbContext, find!, value!);
                     }
                     else
                     {
@@ -95,7 +100,53 @@ namespace PATHServer.ArduinoAction
             }
         }
 
-        private async Task Init_Nodes(MyDbContext dbContext, string message)
+        private T CreateModel<T>(Node node) where T : DataHistory
+        {
+            T dh = (T)Activator.CreateInstance(typeof(T))!;
+            dh.dh_date = DateTime.Now;
+            dh.node_id = node.node_id;
+            return dh;
+        }
+
+        private async Task CreateHistory(MyDbContext dbContext, Node node, object data)
+        {
+            if(data is string str)
+            {
+                DataHistoryString dhs = CreateModel<DataHistoryString>(node);
+                dhs.dh_string_value = str;
+                await dbContext.DataHistoryStrings.AddAsync(dhs);
+            }
+            else if(data is DateTime dt)
+            {
+                DataHistoryDate dhd = CreateModel<DataHistoryDate>(node);
+                dhd.dh_date_value = dt;
+                await dbContext.DataHistoryDates.AddAsync(dhd);
+            }
+            else if (data is double db)
+            {
+                DataHistoryDouble dhd = CreateModel<DataHistoryDouble>(node);
+                dhd.dh_double_value = db;
+                await dbContext.DataHistoryDoubles.AddAsync(dhd);
+            }
+            else if (data is int i)
+            {
+                DataHistoryInt dhi = CreateModel<DataHistoryInt>(node);
+                dhi.dh_int_value = i;
+                await dbContext.DataHistoryInts.AddAsync(dhi);
+            }
+            else if (data is bool b)
+            {
+                DataHistoryBool dhb = CreateModel<DataHistoryBool>(node);
+                dhb.dh_bool_value = b;
+                await dbContext.DataHistoryBools.AddAsync(dhb);
+            }
+            else
+            {
+                Log("⚠ data not created, unsuported type");
+            }
+        }
+
+        private async Task InitNodes(MyDbContext dbContext, string message)
         {
             string[] allNodes = message.Split(SEPARATOR_INIT_NODE);
             bool nodeCreated = false;
@@ -108,17 +159,31 @@ namespace PATHServer.ArduinoAction
                 {
                     string nodeName = arrInfos[0];
                     string dataType = arrInfos[1];
-                    if(!string.IsNullOrWhiteSpace(nodeName) && 
-                        ArdConverter.TryGetTypeFromString(dataType, out NodeTypeData? typeData))
+                    if(!string.IsNullOrWhiteSpace(nodeName))
                     {
-                        Node? find = await dbContext.Nodes.FirstOrDefaultAsync(x => x.node_name == nodeName);
-                        if(find == null)
+                        if (ArdConverter.IsAction(dataType, out NodeTypeData? type))
                         {
-                            Node n = new Node();
-                            n.node_name = nodeName;
-                            n.node_type_data = (int)typeData!;
-                            nodeCreated = true;
-                            await dbContext.Nodes.AddAsync(n);
+                            if (!actions.ContainsKey(nodeName))
+                            {
+                                actions.Add(nodeName, type!.Value);
+                            }
+                            else
+                            {
+                                //Log("⚠ action already exist, 'nodeName' : " + nodeName);
+                            }
+                        }
+                        else if(ArdConverter.IsTypeData(dataType, out NodeTypeData? typeData) &&
+                        typeData != NodeTypeData.Rbg)
+                        {
+                            Node? find = await dbContext.Nodes.FirstOrDefaultAsync(x => x.node_name == nodeName);
+                            if (find == null)
+                            {
+                                Node n = new Node();
+                                n.node_name = nodeName;
+                                n.node_type_data = (int)typeData!;
+                                nodeCreated = true;
+                                await dbContext.Nodes.AddAsync(n);
+                            }
                         }
                     }
                     else

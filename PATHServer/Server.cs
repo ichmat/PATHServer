@@ -140,11 +140,30 @@ namespace PATHServer
             }
         }
 
-        private async Task _mqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs arg)
+        public async Task<bool> SendMessage(string clientID, string topic, string message)
         {
-            await _ardCom.RecieveMessage(arg.ClientId,
+            IList<MqttClientStatus> clients = await _mqttServer.GetClientsAsync();
+            var MQTT_message = new MqttApplicationMessage();
+            MQTT_message.Topic = topic;
+            MQTT_message.Payload = System.Text.UTF8Encoding.UTF8.GetBytes(message);
+
+            foreach (var client in clients)
+            {
+                if(client.Id == clientID) {
+                    await client.Session.EnqueueApplicationMessageAsync(MQTT_message);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private Task _mqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs arg)
+        {
+            _ardCom.RecieveMessage(arg.ClientId,
                 arg.ApplicationMessage.Topic,
-                UTF8Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
+                UTF8Encoding.UTF8.GetString(arg.ApplicationMessage.Payload)).Wait();
+            return Task.CompletedTask;
         }
 
         private Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)

@@ -49,7 +49,7 @@ namespace WebApplicationAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("connect")]
-        public async Task<IActionResult> ConnectUser(, string surname, string name, string email)
+        public async Task<IActionResult> ConnectUser(string surname, string name, string email)
         {
             Node? nd = await _context.Nodes.FirstOrDefaultAsync();
             if(nd == null)

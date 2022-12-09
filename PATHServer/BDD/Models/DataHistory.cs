@@ -17,10 +17,6 @@ namespace PATHServer.BDD.Models
         public DateTime dh_date { get; set; }
 
         [Required]
-        [ForeignKey("DataInfo")]
-        public int di_id { get; set; }
-
-        [Required]
         [ForeignKey("Node")]
         public int node_id { get; set; }
     }

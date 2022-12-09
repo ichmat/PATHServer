@@ -14,5 +14,6 @@ namespace PATHServer.BDD.Models
         String = 3,
         Long = 4,
         Boolean = 5,
+        Rbg = 6,
     }
 }
