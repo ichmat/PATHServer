@@ -19,7 +19,7 @@ namespace WebApplicationAPI
                .AddJsonFile("appsettings.json", true, true)
                .Build();
 
-            _server = new Server();
+            Server _server = new Server();
             _server.OnServerLog += _server_OnServerLog;
 #if DEBUG
             _server.StartTest().Wait();
