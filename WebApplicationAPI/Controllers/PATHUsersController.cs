@@ -12,11 +12,11 @@ namespace WebApplicationAPI.Controllers
 {
     [ApiController]
     [Route("user")]
-    public class PATHUsersController : Controller
+    public class NoderController : Controller
     {
         private readonly MyDbContext _context;
 
-        public PATHUsersController(MyDbContext context)
+        public NoderController(MyDbContext context)
         {
             _context = context;
         }
@@ -48,8 +48,8 @@ namespace WebApplicationAPI.Controllers
         /// Fait un simple ping
         /// </summary>
         /// <returns></returns>
-        [HttpGet("ping")]
-        public async Task<IActionResult> Ping()
+        [HttpGet("connect")]
+        public async Task<IActionResult> ConnectUser(, string surname, string name, string email)
         {
             Node? nd = await _context.Nodes.FirstOrDefaultAsync();
             if(nd == null)
