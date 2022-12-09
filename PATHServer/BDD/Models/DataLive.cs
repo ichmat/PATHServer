@@ -20,11 +20,9 @@ namespace PATHServer.BDD.Models
 
         public float dl_val_double { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string dl_val_string { get; set; }
 
-        [Required]
         public DateTime dl_val_datetime { get; set; }
 
     }

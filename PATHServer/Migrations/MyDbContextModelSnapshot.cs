@@ -65,9 +65,6 @@ namespace PATHServer.Migrations
                     b.Property<DateTime>("dh_date")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("di_id")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("node_id")
                         .HasColumnType("INTEGER");
 
@@ -78,22 +75,6 @@ namespace PATHServer.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("DataHistory");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("PATHServer.BDD.Models.DataInfo", b =>
-                {
-                    b.Property<int>("di_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("di_name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("di_id");
-
-                    b.ToTable("DataInfos");
                 });
 
             modelBuilder.Entity("PATHServer.BDD.Models.KeyConnexion", b =>

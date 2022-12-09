@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PATHServer.Migrations
 {
     /// <inheritdoc />
-    public partial class init2 : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,9 +46,9 @@ namespace PATHServer.Migrations
                     dhid = table.Column<int>(name: "dh_id", type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     dhdate = table.Column<DateTime>(name: "dh_date", type: "TEXT", nullable: false),
-                    diid = table.Column<int>(name: "di_id", type: "INTEGER", nullable: false),
                     nodeid = table.Column<int>(name: "node_id", type: "INTEGER", nullable: false),
                     Discriminator = table.Column<string>(type: "TEXT", nullable: false),
+                    dhboolvalue = table.Column<bool>(name: "dh_bool_value", type: "INTEGER", nullable: true),
                     dhdatevalue = table.Column<DateTime>(name: "dh_date_value", type: "TEXT", nullable: true),
                     dhdoublevalue = table.Column<double>(name: "dh_double_value", type: "REAL", nullable: true),
                     dhintvalue = table.Column<int>(name: "dh_int_value", type: "INTEGER", nullable: true),
@@ -57,19 +57,6 @@ namespace PATHServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DataHistories", x => x.dhid);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DataInfos",
-                columns: table => new
-                {
-                    diid = table.Column<int>(name: "di_id", type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    diname = table.Column<string>(name: "di_name", type: "TEXT", maxLength: 255, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DataInfos", x => x.diid);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,11 +81,28 @@ namespace PATHServer.Migrations
                 {
                     nodeid = table.Column<int>(name: "node_id", type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    nodename = table.Column<string>(name: "node_name", type: "TEXT", maxLength: 50, nullable: false)
+                    nodename = table.Column<string>(name: "node_name", type: "TEXT", maxLength: 50, nullable: false),
+                    nodetypedata = table.Column<int>(name: "node_type_data", type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Nodes", x => x.nodeid);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    puid = table.Column<int>(name: "pu_id", type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    puemail = table.Column<string>(name: "pu_email", type: "TEXT", maxLength: 500, nullable: false),
+                    puname = table.Column<string>(name: "pu_name", type: "TEXT", maxLength: 255, nullable: false),
+                    pusurname = table.Column<string>(name: "pu_surname", type: "TEXT", maxLength: 255, nullable: false),
+                    puadmin = table.Column<bool>(name: "pu_admin", type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.puid);
                 });
         }
 
@@ -115,13 +119,13 @@ namespace PATHServer.Migrations
                 name: "DataHistories");
 
             migrationBuilder.DropTable(
-                name: "DataInfos");
-
-            migrationBuilder.DropTable(
                 name: "Keys");
 
             migrationBuilder.DropTable(
                 name: "Nodes");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

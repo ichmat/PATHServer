@@ -10,7 +10,6 @@ public class MyDbContext : DbContext
     public DbSet<ActionHistoryInfo> ActionHistoryInfos { get; set; }
     public DbSet<ActionHistory> ActionHistories { get; set; }
     public DbSet<Node> Nodes { get; set; }
-    public DbSet<DataInfo> DataInfos { get; set; }
     public DbSet<DataHistory> DataHistories { get; set; }
     public DbSet<DataHistoryDouble> DataHistoryDoubles { get; set; }
     public DbSet<DataHistoryDate> DataHistoryDates { get; set; }

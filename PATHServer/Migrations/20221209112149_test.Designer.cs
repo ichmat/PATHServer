@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PATHServer.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20221208142338_init2")]
-    partial class init2
+    [Migration("20221209112149_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,9 +68,6 @@ namespace PATHServer.Migrations
                     b.Property<DateTime>("dh_date")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("di_id")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("node_id")
                         .HasColumnType("INTEGER");
 
@@ -81,22 +78,6 @@ namespace PATHServer.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("DataHistory");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("PATHServer.BDD.Models.DataInfo", b =>
-                {
-                    b.Property<int>("di_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("di_name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("di_id");
-
-                    b.ToTable("DataInfos");
                 });
 
             modelBuilder.Entity("PATHServer.BDD.Models.KeyConnexion", b =>
@@ -137,6 +118,9 @@ namespace PATHServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("node_type_data")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("node_id");
 
                     b.ToTable("Nodes");
@@ -169,6 +153,16 @@ namespace PATHServer.Migrations
                     b.HasKey("pu_id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PATHServer.BDD.Models.DataHistoryBool", b =>
+                {
+                    b.HasBaseType("PATHServer.BDD.Models.DataHistory");
+
+                    b.Property<bool>("dh_bool_value")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("DataHistoryBool");
                 });
 
             modelBuilder.Entity("PATHServer.BDD.Models.DataHistoryDate", b =>
