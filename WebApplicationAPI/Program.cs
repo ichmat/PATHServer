@@ -21,7 +21,7 @@ namespace WebApplicationAPI
             Server.instance = new Server();
             Server.instance.OnServerLog += _server_OnServerLog;
 #if DEBUG
-            instance.StartTest().Wait();
+            Server.instance.StartTest().Wait();
 #else
             _server.Start();
 #endif

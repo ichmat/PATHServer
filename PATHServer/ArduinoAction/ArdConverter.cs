@@ -19,30 +19,24 @@ namespace PATHServer.ArduinoAction
         private const string STRING = "string";
         private const string BOOLEAN = "boolean";
 
-        private const char ACTION_SEPARATOR = '_';
-        private const string ACTION = "action";
-        private const string RGB = "rgb";
-
         private static CultureInfo ci = CultureInfo.InvariantCulture;
 
-        internal static bool IsTypeData(string typeName, out NodeTypeData? type)
+        internal static bool TryGetTypeFromString(string typeName, out InfoTypeData? type)
         {
             typeName = typeName.Trim().ToLower();
             switch (typeName)
             {
                 case INT:
-                    type = NodeTypeData.Int; return true;
+                    type = InfoTypeData.Int; return true;
                 case LONG:
-                    type = NodeTypeData.Long; return true;
+                    type = InfoTypeData.Long; return true;
                 case FLOAT:
                 case DOUBLE:
-                    type = NodeTypeData.Double; return true;
+                    type = InfoTypeData.Double; return true;
                 case STRING:
-                    type = NodeTypeData.String; return true;
+                    type = InfoTypeData.String; return true;
                 case BOOLEAN:
-                    type = NodeTypeData.Boolean; return true;
-                case RGB:
-                    type = NodeTypeData.Rbg; return true;
+                    type = InfoTypeData.Boolean; return true;
 
             }
 
@@ -50,44 +44,28 @@ namespace PATHServer.ArduinoAction
             return false;
         }
 
-        internal static bool IsAction(string typeName, out NodeTypeData? type)
-        {
-            string[] actions_data = typeName.Trim().ToLower().Split(ACTION_SEPARATOR);
-            type = null;
-            if (actions_data.Length == 2)
-            {
-                string action = actions_data[0];
-                string typeStr = actions_data[1];
-                if(action == ACTION && IsTypeData(typeStr, out type)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        internal static bool TryConvertData(NodeTypeData type, string content, out object? value)
+        internal static bool TryConvertData(InfoTypeData type, string content, out object? value)
         {
             try
             {
                 switch (type)
                 {
-                    case NodeTypeData.Boolean:
+                    case InfoTypeData.Boolean:
                         value = Convert.ToBoolean(content);
                         return true;
-                    case NodeTypeData.Double:
+                    case InfoTypeData.Double:
                         value = double.Parse(content,ci);
                         return true;
-                    case NodeTypeData.String:
+                    case InfoTypeData.String:
                         value = Convert.ToString(content);
                         return true;
-                    case NodeTypeData.Int: 
+                    case InfoTypeData.Int: 
                         value = Convert.ToInt32(content);
                         return true;
-                    case NodeTypeData.Long:
+                    case InfoTypeData.Long:
                         value = Convert.ToInt64(content);
                         return true;
-                    case NodeTypeData.Date:
+                    case InfoTypeData.Date:
                         value = Convert.ToDateTime(content);
                         return true;
                 }

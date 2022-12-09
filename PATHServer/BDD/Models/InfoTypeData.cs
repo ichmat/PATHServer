@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PATHServer.BDD.Models
 {
-    public enum NodeTypeData
+    public enum InfoTypeData
     {
         Date = 0,
         Double = 1,
