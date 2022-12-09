@@ -9,8 +9,7 @@ namespace WebApplicationAPI
 {
     public class Program
     {
-        public static Server _server;
-
+        
 
         public static void Main(string[] args)
         {
@@ -27,16 +26,6 @@ namespace WebApplicationAPI
 #else
             _server.Start();
 #endif
-            while(true)
-            {
-                Console.WriteLine("appuyer sur entrer pour envoyer un message ...");
-                Console.ReadKey();
-                _server.TestSendMessage().Wait();
-            }
-           
-            ManualResetEvent _manualResetEvent = new ManualResetEvent(false);
-            _manualResetEvent.Reset();
-            _manualResetEvent.WaitOne();
             builder.Services.AddDbContext<MyDbContext>();
 
             // Add services to the container.
@@ -50,7 +39,7 @@ namespace WebApplicationAPI
                     Version = "v1",
                     Title = " 📖 Documentation de l'API",
                     Description = "[![projet](https://badgen.net/badge/github/projet/blue?icon=github)](https://github.com/ichmat/WebServiceAPI) \n\n" +
-                    "![NET](https://badgen.net/badge/github/NET6/blue?icon=nuget&label) \n\n" +
+                    "![NET](https://badgen.net/badge/github/NET7/blue?icon=nuget&label) \n\n" +
                     
                     "## 👩‍💻 Contacts\n" +
                     "[Cédric GUILLEMIN](mailto:cedric.guillemin@ynov.com)\n\n" +
@@ -64,6 +53,11 @@ namespace WebApplicationAPI
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
+            builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+            {
+                builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+            }));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -72,6 +66,8 @@ namespace WebApplicationAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("corsapp");
 
             app.UseHttpsRedirection();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,10 @@ namespace WebApplicationAPI.Controllers
     {
         private readonly MyDbContext _context;
 
-        /*public PATHUsersController(MyDbContext context)
+        public PATHUsersController(MyDbContext context)
         {
             _context = context;
-        }*/
+        }
 
         /// <summary>
         /// Créer un utilisateur
@@ -44,17 +45,21 @@ namespace WebApplicationAPI.Controllers
         }
 
         /// <summary>
-        /// Créer un utilisateur
+        /// Fait un simple ping
         /// </summary>
-        /// <returns>l'id d'utilisateur</returns>
-        /// <response code="401">La clé de connexion a été refusé</response>
-        /// <response code="400">Entrés invalide</response>
+        /// <returns></returns>
         [HttpGet("ping")]
         public async Task<IActionResult> Ping()
         {
-            return Ok();
+            Node? nd = await _context.Nodes.FirstOrDefaultAsync();
+            if(nd == null)
+            {
+                return Ok(Json("no node"));
+            }
+            else
+            {
+                return Ok(Json(nd));
+            }
         }
-
-
     }
 }

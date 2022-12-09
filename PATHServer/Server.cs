@@ -22,7 +22,6 @@ namespace PATHServer
     {
         public const int PORT = 8080;
 
-        private IManagedMqttClient _mqttClient;
         private MqttServer _mqttServer;
 
         public delegate void ServerLog(string log);
@@ -73,9 +72,7 @@ namespace PATHServer
 
         #endregion
 
-        #region MQTT
-
-        #region SERVER
+        #region MQTT_SERVER
 
         private async Task StartMQTTServerTest()
         {
@@ -123,53 +120,6 @@ namespace PATHServer
             return Task.CompletedTask;
         }
 
-        #endregion
-
-        private async Task StartMQTTClientTest()
-        {
-            // Creates a new client
-            MqttClientOptionsBuilder builder = new MqttClientOptionsBuilder()
-                                                    .WithClientId("PATHServer")
-                                                    .WithTcpServer("localhost", 707);
-
-            // Create client options objects
-            ManagedMqttClientOptions options = new ManagedMqttClientOptionsBuilder()
-                                    .WithAutoReconnectDelay(TimeSpan.FromSeconds(60))
-                                    .WithClientOptions(builder.Build())
-                                    .Build();
-
-            // Creates the client object
-            _mqttClient = new MqttFactory().CreateManagedMqttClient();
-
-            // Set up handlers
-            _mqttClient.ConnectedAsync += _mqttClient_ConnectedAsync;
-            _mqttClient.DisconnectedAsync += _mqttClient_DisconnectedAsync;
-            _mqttClient.ConnectingFailedAsync += _mqttClient_ConnectingFailedAsync;
-
-            // Starts a connection with the Broker
-            await _mqttClient.StartAsync(options);
-            // Send a new message to the broker every second
-            string json = JsonConvert.SerializeObject(new { message = "Heyo :)", sent = DateTimeOffset.UtcNow });
-            await _mqttClient.EnqueueAsync("dev.to/topic/json", json);
-        }
-
-        private Task _mqttClient_ConnectingFailedAsync(ConnectingFailedEventArgs arg)
-        {
-            OnServerLog?.Invoke("MQTT Client ConnectingFailed : " + arg.Exception.ToString());
-            return Task.CompletedTask;
-        }
-
-        private Task _mqttClient_DisconnectedAsync(MqttClientDisconnectedEventArgs arg)
-        {
-            OnServerLog?.Invoke("MQTT Client Disconnected");
-            return Task.CompletedTask;
-        }
-
-        private Task _mqttClient_ConnectedAsync(MqttClientConnectedEventArgs arg)
-        {
-            OnServerLog?.Invoke("MQTT Client Connected");
-            return Task.CompletedTask;
-        }
         #endregion
 
         #region WIFI
