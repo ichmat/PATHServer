@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PATHServer.BDD.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PATHServer.ArduinoAction
@@ -22,6 +24,12 @@ namespace PATHServer.ArduinoAction
         {
             validated = new Dictionary<string, bool>();
             actions = new Dictionary<string, NodeTypeData>();
+        }
+
+        public string GetActionsJson()
+        {
+            Dictionary<string, string> dict_str = actions.ToDictionary(x => x.Key, x => x.Value.ToString());
+            return JsonSerializer.Serialize(dict_str);
         }
 
         public bool NewConnection(string userID)

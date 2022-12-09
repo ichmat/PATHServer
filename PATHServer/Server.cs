@@ -47,6 +47,8 @@ namespace PATHServer
 
 #endif
 
+        public async Task<bool> IsValidNodeName(string )
+
         public void Log(string message)
         {
             OnServerLog?.Invoke(message);

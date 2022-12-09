@@ -22,33 +22,19 @@ namespace WebApplicationAPI.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Créer une node
-        /// </summary>
-        /// <param name="connexionId">La clé de connexion</param>
-        /// <param name="surname"></param>
-        /// <param name="name"></param>
-        /// <param name="email"></param>
-        /// <returns>l'id d'utilisateur</returns>
-        /// <response code="401">La clé de connexion a été refusé</response>
-        /// <response code="400">Entrés invalide</response>
-        [HttpPost("create")]
-        public async Task<IActionResult> Create(int node_id, string node_name)
+        [HttpGet("action")]
+        public async Task<IActionResult> ExecuteAction(string connexionId, string actionName, object actionData)
         {
-            var u = new Node();
-            u.node_name = node_name;
-            u.node_id = node_id;
-            _context.Add(u);
-            await _context.SaveChangesAsync();
-            return Ok(u);
+
         }
 
         /// <summary>
-        /// get list of node
+        /// Get All Node
         /// </summary>
+        /// <param name="connexionId">key connexion</param>
         /// <returns></returns>
         [HttpGet("nodelist")]
-        public async Task<IActionResult> GetNodeList()
+        public async Task<IActionResult> GetNodeList(string connexionId)
         {
           List<Node> nd =  _context.Nodes.Select(row => row).ToList(); ;
 
@@ -65,6 +51,8 @@ namespace WebApplicationAPI.Controllers
         /// <summary>
         /// get a node by name
         /// </summary>
+        /// <param name="connexionId">key connexio</param>
+        /// <param name="nodename">node name</param>
         /// <remarks>
         /// Sample request:
         ///
@@ -76,7 +64,7 @@ namespace WebApplicationAPI.Controllers
         /// </remarks>
         /// <returns> </returns>
         [HttpGet("nodename")]
-        public async Task<IActionResult> GetNodeByName(string nodename)
+        public async Task<IActionResult> GetNodeByName(string connexionId, string nodename)
         {
             Node? nd = await _context.Nodes.FirstOrDefaultAsync(x => x.node_name == nodename);
 
@@ -90,24 +78,8 @@ namespace WebApplicationAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Créer une node
-        /// </summary>
-        /// <param name="nodeid">L'id Correspondant au capteur</param>
-        /// <remarks>
-        /// <returns>l'id d'utilisateur</returns>
-        /// <response code="401">La clé de connexion a été refusé</response>
-        /// <response code="400">Entrés invalide</response>
-        /// Sample request:
-        ///
-        /// GET/nodeid
-        /// {
-        ///    "id": "1"
-        /// }
-        ///
-        /// </remarks>
         [HttpGet("nodeid")]
-        public async Task<IActionResult> GetNodeById(int nodeid)
+        public async Task<IActionResult> GetNodeById(string connexionId, int nodeid)
         {
             Node? nd = await _context.Nodes.FirstOrDefaultAsync(x => x.node_id == nodeid);
 
