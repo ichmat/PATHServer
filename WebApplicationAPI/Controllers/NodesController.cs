@@ -25,37 +25,6 @@ namespace WebApplicationAPI.Controllers
         }
 
         /// <summary>
-        /// Execute an action
-        /// </summary>
-        /// <param name="connexionId">key connexion</param>
-        /// <param name="actionName">name of the action</param>
-        /// <param name="actionData">data for the action</param>
-        /// <returns></returns>
-        [HttpGet("action")]
-        public async Task<IActionResult> ExecuteAction(string connexionId, string actionName, string actionData)
-        {
-            ActionTrigger? actionTrigger = _context.ActionTriggers.FirstOrDefault(x => x.act_name == actionName);
-            if(actionTrigger != null)
-            {
-                if(Server.instance.IsValidData(actionTrigger!.ActTypeData, actionData, out string? val))
-                {
-                    await Server.instance.SendBroadcast(actionTrigger!.act_name, val);
-                    // CHECK SENDING
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest("bad type data for 'actionData'");
-                }
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
-
-        /// <summary>
         /// Get All Node
         /// </summary>
         /// <param name="connexionId">key connexion</param>
@@ -63,7 +32,7 @@ namespace WebApplicationAPI.Controllers
         [HttpGet("nodelist")]
         public async Task<IActionResult> GetNodeList(string connexionId)
         {
-          List<Node> nd =  _context.Nodes.Select(row => row).ToList(); ;
+          List<Node> nd = _context.Nodes.Select(row => row).ToList();
 
             if (nd == null)
             {

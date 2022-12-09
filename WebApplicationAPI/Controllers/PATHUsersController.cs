@@ -14,11 +14,11 @@ namespace WebApplicationAPI.Controllers
 {
     [ApiController]
     [Route("user")]
-    public class NoderController : Controller
+    public class PATHUsersController : Controller
     {
         private readonly MyDbContext _context;
 
-        public NoderController(MyDbContext context)
+        public PATHUsersController(MyDbContext context)
         {
             _context = context;
         }
@@ -75,7 +75,7 @@ namespace WebApplicationAPI.Controllers
         [HttpPost("connect")]
         public async Task<IActionResult> ConnectUser(string pass, string name)
         {
-            PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_name == name || x.pu_password == pass);
+            /*PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_name == name || x.pu_password == pass);
 
             List<data> _data = new List<data>();
 
@@ -97,7 +97,8 @@ namespace WebApplicationAPI.Controllers
             else
             {
                 return Ok(output);
-            }
+            }*/
+            return Ok(Json("no User with this credentials"));
         }
 
         /// <summary>
