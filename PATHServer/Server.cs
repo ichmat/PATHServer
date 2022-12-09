@@ -47,7 +47,11 @@ namespace PATHServer
 
 #endif
 
-        public async Task<bool> IsValidNodeName(string )
+
+        public bool IsValidData(InfoTypeData waiting, string actionData, out string? val)
+        {
+            return ArdConverter.IsCorectDataForArduino(waiting, actionData, out val);
+        }
 
         public void Log(string message)
         {
@@ -105,9 +109,10 @@ namespace PATHServer
         private async Task StartMQTTServerTest()
         {
             MqttServerOptionsBuilder optionsBuilder = new MqttServerOptionsBuilder()
-                .WithConnectionBacklog(100)
+                .WithConnectionBacklog(10)
                 .WithDefaultEndpointPort(1884)
-                .WithDefaultEndpoint();
+                .WithDefaultEndpoint()
+                .WithMaxPendingMessagesPerClient(10);
 
             _mqttServer = new MqttFactory().CreateMqttServer(optionsBuilder.Build());
             _mqttServer.ValidatingConnectionAsync += MqttServer_ValidatingConnectionAsync;
@@ -158,6 +163,19 @@ namespace PATHServer
             }
 
             return false;
+        }
+
+        public async Task SendBroadcast(string topic, string message)
+        {
+            IList<MqttClientStatus> clients = await _mqttServer.GetClientsAsync();
+            var MQTT_message = new MqttApplicationMessage();
+            MQTT_message.Topic = topic;
+            MQTT_message.Payload = System.Text.UTF8Encoding.UTF8.GetBytes(message);
+
+            foreach (var client in clients)
+            {
+                await client.Session.EnqueueApplicationMessageAsync(MQTT_message);
+            }
         }
 
         private Task _mqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs arg)

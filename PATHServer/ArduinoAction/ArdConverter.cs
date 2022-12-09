@@ -19,9 +19,13 @@ namespace PATHServer.ArduinoAction
         private const string STRING = "string";
         private const string BOOLEAN = "boolean";
 
+        private const char ACTION_SEPARATOR = '_';
+        private const string ACTION = "action";
+        private const string RGB = "rgb";
+
         private static CultureInfo ci = CultureInfo.InvariantCulture;
 
-        internal static bool TryGetTypeFromString(string typeName, out InfoTypeData? type)
+        internal static bool IsTypeData(string typeName, out InfoTypeData? type)
         {
             typeName = typeName.Trim().ToLower();
             switch (typeName)
@@ -37,10 +41,29 @@ namespace PATHServer.ArduinoAction
                     type = InfoTypeData.String; return true;
                 case BOOLEAN:
                     type = InfoTypeData.Boolean; return true;
+                case RGB:
+                    type = InfoTypeData.Rbg; return true;
 
             }
 
             type = null;
+            return false;
+        }
+
+        internal static bool IsAction(string typeName, out InfoTypeData? type)
+        {
+            string[] actions_data = typeName.Trim().ToLower().Split(ACTION_SEPARATOR);
+            type = null;
+            if (actions_data.Length == 2)
+            {
+                string action = actions_data[0];
+                string typeStr = actions_data[1];
+                if (action == ACTION && IsTypeData(typeStr, out type))
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -54,12 +77,12 @@ namespace PATHServer.ArduinoAction
                         value = Convert.ToBoolean(content);
                         return true;
                     case InfoTypeData.Double:
-                        value = double.Parse(content,ci);
+                        value = double.Parse(content, ci);
                         return true;
                     case InfoTypeData.String:
                         value = Convert.ToString(content);
                         return true;
-                    case InfoTypeData.Int: 
+                    case InfoTypeData.Int:
                         value = Convert.ToInt32(content);
                         return true;
                     case InfoTypeData.Long:
@@ -67,6 +90,51 @@ namespace PATHServer.ArduinoAction
                         return true;
                     case InfoTypeData.Date:
                         value = Convert.ToDateTime(content);
+                        return true;
+                }
+                value = null;
+                return false;
+            }
+            catch
+            {
+                value = null;
+                return false;
+            }
+        }
+
+
+        internal static bool IsCorectDataForArduino(InfoTypeData type, string content, out string? value)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case InfoTypeData.Boolean:
+                        if(content == "0" || content == "1")
+                        {
+                            value = content;
+                            return true;
+                        }
+                        else
+                        {
+                            value = null;
+                            return false;
+                        }
+                        
+                    case InfoTypeData.Double:
+                        value = double.Parse(content, ci).ToString(ci);
+                        return true;
+                    case InfoTypeData.String:
+                        value = Convert.ToString(content);
+                        return true;
+                    case InfoTypeData.Int:
+                        value = Convert.ToInt32(content).ToString();
+                        return true;
+                    case InfoTypeData.Long:
+                        value = Convert.ToInt64(content).ToString();
+                        return true;
+                    case InfoTypeData.Date:
+                        value = Convert.ToDateTime(content).ToString();
                         return true;
                 }
                 value = null;

@@ -7,6 +7,7 @@ public class MyDbContext : DbContext
 {
     public DbSet<PATHUser> Users { get; set; }
     public DbSet<KeyConnexion> Keys { get; set; }
+    public DbSet<ActionTrigger> ActionTriggers { get; set; }
     public DbSet<ActionHistoryInfo> ActionHistoryInfos { get; set; }
     public DbSet<ActionHistory> ActionHistories { get; set; }
     public DbSet<Node> Nodes { get; set; }

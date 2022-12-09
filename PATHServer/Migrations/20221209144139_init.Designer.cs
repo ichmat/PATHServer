@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PATHServer.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20221209112149_test")]
-    partial class test
+    [Migration("20221209144139_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,9 @@ namespace PATHServer.Migrations
                 {
                     b.Property<int>("ah_id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("act_id")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ah_date")
@@ -53,6 +56,24 @@ namespace PATHServer.Migrations
                     b.HasKey("ahi_id");
 
                     b.ToTable("ActionHistoryInfos");
+                });
+
+            modelBuilder.Entity("PATHServer.BDD.Models.ActionTrigger", b =>
+                {
+                    b.Property<int>("ah_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("act_name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("act_type_data")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ah_id");
+
+                    b.ToTable("ActionTriggers");
                 });
 
             modelBuilder.Entity("PATHServer.BDD.Models.DataHistory", b =>
@@ -141,6 +162,11 @@ namespace PATHServer.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("pu_name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("pu_password")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");

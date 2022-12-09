@@ -22,6 +22,9 @@ namespace PATHServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("act_id")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("ah_date")
                         .HasColumnType("TEXT");
 
@@ -50,6 +53,24 @@ namespace PATHServer.Migrations
                     b.HasKey("ahi_id");
 
                     b.ToTable("ActionHistoryInfos");
+                });
+
+            modelBuilder.Entity("PATHServer.BDD.Models.ActionTrigger", b =>
+                {
+                    b.Property<int>("ah_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("act_name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("act_type_data")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ah_id");
+
+                    b.ToTable("ActionTriggers");
                 });
 
             modelBuilder.Entity("PATHServer.BDD.Models.DataHistory", b =>

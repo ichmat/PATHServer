@@ -21,6 +21,6 @@ namespace PATHServer.BDD.Models
         [DisplayName("node_type_data")]
         public int node_type_data { get; set; }
 
-        public InfoTypeData NodeTypeData { get => (InfoTypeData)node_type_data; }
+        public InfoTypeData InfoTypeData { get => (InfoTypeData)node_type_data; }
     }
 }

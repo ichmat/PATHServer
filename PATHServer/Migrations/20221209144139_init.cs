@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PATHServer.Migrations
 {
     /// <inheritdoc />
-    public partial class test : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace PATHServer.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ahdate = table.Column<DateTime>(name: "ah_date", type: "TEXT", nullable: false),
                     ahiid = table.Column<int>(name: "ahi_id", type: "INTEGER", nullable: false),
-                    puid = table.Column<int>(name: "pu_id", type: "INTEGER", nullable: false)
+                    puid = table.Column<int>(name: "pu_id", type: "INTEGER", nullable: false),
+                    actid = table.Column<int>(name: "act_id", type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,6 +38,20 @@ namespace PATHServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ActionHistoryInfos", x => x.ahiid);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActionTriggers",
+                columns: table => new
+                {
+                    ahid = table.Column<int>(name: "ah_id", type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    acttypedata = table.Column<int>(name: "act_type_data", type: "INTEGER", nullable: false),
+                    actname = table.Column<string>(name: "act_name", type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActionTriggers", x => x.ahid);
                 });
 
             migrationBuilder.CreateTable(
@@ -98,6 +113,7 @@ namespace PATHServer.Migrations
                     puemail = table.Column<string>(name: "pu_email", type: "TEXT", maxLength: 500, nullable: false),
                     puname = table.Column<string>(name: "pu_name", type: "TEXT", maxLength: 255, nullable: false),
                     pusurname = table.Column<string>(name: "pu_surname", type: "TEXT", maxLength: 255, nullable: false),
+                    pupassword = table.Column<string>(name: "pu_password", type: "TEXT", maxLength: 255, nullable: false),
                     puadmin = table.Column<bool>(name: "pu_admin", type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -114,6 +130,9 @@ namespace PATHServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "ActionHistoryInfos");
+
+            migrationBuilder.DropTable(
+                name: "ActionTriggers");
 
             migrationBuilder.DropTable(
                 name: "DataHistories");
