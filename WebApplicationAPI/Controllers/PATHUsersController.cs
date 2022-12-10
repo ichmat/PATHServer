@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using PATHServer;
 using PATHServer.BDD.Models;
 using PATHServer.Migrations;
 
@@ -75,32 +76,20 @@ namespace WebApplicationAPI.Controllers
         [HttpPost("connect")]
         public async Task<IActionResult> ConnectUser(string pass, string name)
         {
-            /*PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_name == name || x.pu_password == pass);
+            PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_name == name || x.pu_password == pass);
 
-            List<data> _data = new List<data>();
+          var parsedPathUser =  PathUserParsed.CreateFromModel(nd);
 
-            _data.Add(new data()
-            {
-                Id = nd.pu_id,
-                SSN = 2,
-                Message = "A Message"
-            });
-
-            string json = JsonSerializer.Serialize(_data);
-
-
-
-            if (nd == null)
+             if (nd == null)
             {
                 return Ok(Json("no User with this logs"));
             }
             else
             {
-                return Ok(output);
-            }*/
-            return Ok(Json("no User with this credentials"));
+                return Ok(PathTools.GetJsonResponse(parsedPathUser, "Test message"));
+            }
         }
-
+        
         /// <summary>
         /// Modifie un utilisateur
         /// </summary>
