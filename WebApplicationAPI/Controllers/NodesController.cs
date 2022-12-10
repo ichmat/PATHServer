@@ -32,15 +32,15 @@ namespace WebApplicationAPI.Controllers
         [HttpGet("nodelist")]
         public async Task<IActionResult> GetNodeList(string connexionId)
         {
-          List<Node> nd = _context.Nodes.Select(row => row).ToList();
-
+          List<NodeParsed> nd = _context.Nodes.Select(row => NodeParsed.CreateFromModel(row)).ToList();
+            
             if (nd == null)
             {
                 return Ok(Json("no node"));
             }
             else
             {
-                return Ok(Json(nd));
+                return Ok(PathTools.GetJsonResponse(nd, "Ok"));
             }
         }
 
@@ -62,15 +62,14 @@ namespace WebApplicationAPI.Controllers
         [HttpGet("nodename")]
         public async Task<IActionResult> GetNodeByName(string connexionId, string nodename)
         {
-            Node? nd = await _context.Nodes.FirstOrDefaultAsync(x => x.node_name == nodename);
-
+            NodeParsed? nd = _context.Nodes.Select(row => NodeParsed.CreateFromModel(row).node_name == nodename).First();
             if (nd == null)
             {
                 return Ok(Json("no node"));
             }
             else
             {
-                return Ok(Json(nd));
+                return Ok(PathTools.GetJsonResponse(nd, "Ok"));
             }
         }
 
@@ -78,14 +77,14 @@ namespace WebApplicationAPI.Controllers
         public async Task<IActionResult> GetNodeById(string connexionId, int nodeid)
         {
             Node? nd = await _context.Nodes.FirstOrDefaultAsync(x => x.node_id == nodeid);
-
-            if(nd == null)
+            var parsedNode = NodeParsed.CreateFromModel(nd);
+            if (nd == null)
             {
                 return Ok(Json("no node"));
             }
             else
             {
-                return Ok(Json(nd));
+                return Ok(PathTools.GetJsonResponse(parsedNode, "Ok"));
             }
         }
     }
