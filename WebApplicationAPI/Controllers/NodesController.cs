@@ -62,14 +62,15 @@ namespace WebApplicationAPI.Controllers
         [HttpGet("nodename")]
         public async Task<IActionResult> GetNodeByName(string connexionId, string nodename)
         {
-            NodeParsed? nd = _context.Nodes.Select(row => NodeParsed.CreateFromModel(row).node_name == nodename).First();
+            Node nd = _context.Nodes.First(row => row.node_name == nodename);
+            NodeParsed tat = NodeParsed.CreateFromModel(nd);
             if (nd == null)
             {
                 return Ok(Json("no node"));
             }
             else
             {
-                return Ok(PathTools.GetJsonResponse(nd, "Ok"));
+                return Ok(PathTools.GetJsonResponse(tat, "Ok"));
             }
         }
 
