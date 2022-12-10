@@ -7,25 +7,18 @@ namespace WebApplicationAPI
 {
     public class NodeParsed
     {
-        [Key]
-        public int node_id { get; set; }
+        public int node_id { get; private set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string node_name { get; set; }
+        public string node_name { get; private set; }
 
-        [Required]
-        [DisplayName("node_type_data")]
-        public int node_type_data { get; set; }
+        public string node_type_data { get; private set; }
 
-        public string InfoTypeData { get; set; }
 
-        public NodeParsed(int node_id, string node_name, int node_type_data, string InfoTypeData)
+        public NodeParsed(int node_id, string node_name, string node_type_data)
         {
             this.node_id = node_id;
             this.node_name = node_name;
             this.node_type_data = node_type_data;
-            this.InfoTypeData = InfoTypeData;
         }
 
         public static NodeParsed CreateFromModel(Node model)
@@ -33,7 +26,6 @@ namespace WebApplicationAPI
             return new NodeParsed(
                 model.node_id,
                 model.node_name,
-                model.node_type_data,
                 model.InfoTypeData.ToString()
                 );
         }

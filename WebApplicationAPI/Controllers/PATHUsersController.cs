@@ -27,19 +27,20 @@ namespace WebApplicationAPI.Controllers
         /// <summary>
         /// Créer un utilisateur
         /// </summary>
-        /// <param name="connexionId">La clé de connexion</param>
-        /// <param name="surname"></param>
-        /// <param name="name"></param>
-        /// <param name="email"></param>
-        /// <returns>l'id d'utilisateur</returns>
-        /// </summary>
+        /// <param name="connexionId">connexion key</param>
+        /// <param name="surname">surname of the new user</param>
+        /// <param name="name">name of the new user</param>
+        /// <param name="email">email of the new user</param>
+        /// <param name="password">password of the user</param>
+        /// <returns>the user created</returns>
+        /// 
         /// <remarks>
         /// Sample request:
         ///
         ///GET/nodename
         ///  {
         ///     "name": "Guillemin",
-        ///     "surname": "cedric",
+        ///     "surname": "Cédric",
         ///     "email": "mama@gmail.com",
         ///     "pass": "motdepassesécurisé"
         ///                    
@@ -49,79 +50,104 @@ namespace WebApplicationAPI.Controllers
         /// <response code="401">La clé de connexion a été refusé</response>
         /// <response code="400">Entrés invalide</response>
         [HttpPost("create")]
-        public async Task<IActionResult> Create(string pass, string surname, string name, string email)
+        public async Task<IActionResult> Create(string connexionId, string surname, string name, string email, string password)
         {
+            bool no_user = _context.Users.Count() == 0;
+
+            if (no_user! && await PathTools.CheckKey(_context, connexionId) == false)
+                return await LogsResult.LogAndResult("user/create - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
+
             var u = new PATHUser();
             u.pu_surname = surname;
-            u.pu_password= pass;
+            u.pu_password = password;
             u.pu_name = name;
             u.pu_email = email;
-            u.pu_admin = false;
-            _context.Add(u);
-            await _context.SaveChangesAsync();
-            return Ok(u);
-        }
 
-            
-        /// <summary>
-        /// connecte un utilisateur
-        /// </summary>
-        /// <param name="pass"></param>
-        /// <param name="surname"></param>
-        /// <param name="email"></param>
-        /// <param name="name"></param>
-        /// <returns>l'id de l'utilisateur connecté</returns>
-        /// <response code="401">La clé de connexion a été refusé</response>
-        /// <response code="400">Entrés invalide</response>
-        [HttpPost("connect")]
-        public async Task<IActionResult> ConnectUser(string pass, string name)
-        {
-            PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_name == name || x.pu_password == pass);
-
-          var parsedPathUser =  PathUserParsed.CreateFromModel(nd);
-
-             if (nd == null)
+            if (no_user)
             {
-                return Ok(Json("no User with this logs"));
+                u.pu_admin = true;
             }
             else
             {
-                return Ok(PathTools.GetJsonResponse(parsedPathUser, "Test message"));
+                u.pu_admin = false;
+            }
+            
+            _context.Add(u);
+            await _context.SaveChangesAsync();
+            return await LogsResult.LogAndResult("user/create - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathUserParsed.CreateFromModel(u));
+        }
+
+        /// <summary>
+        /// attempts to connect
+        /// </summary>
+        /// <param name="email">email of the user</param>
+        /// <param name="password">password of the user</param>
+        /// <returns>The key of connexion</returns>
+        /// <response code="400">Invalid entries</response>
+        [HttpPost("connect")]
+        public async Task<IActionResult> ConnectUser(string email, string password)
+        {
+            PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_email == email && x.pu_password == password);
+
+            if (nd == null)
+            {
+                return await LogsResult.LogAndResult("user/connect - bad credentials", TypeLOG.FAIL, "", _context, BadRequest, PathTools.GetJsonResponse("bad credentials"));
+            }
+            else
+            {
+                KeyConnexion c = new KeyConnexion();
+                c.key_id = Guid.NewGuid().ToString();
+                c.pu_id = nd.pu_id;
+                c.key_quota = 0;
+                c.key_quotaRefresh = DateTime.UtcNow;
+                c.key_lastUpdated = DateTime.UtcNow;
+                c.key_created = DateTime.UtcNow;
+                _context.Add(c);
+                await _context.SaveChangesAsync(true);
+                return await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));
             }
         }
-        
+
         /// <summary>
         /// Modifie un utilisateur
         /// </summary>
-        /// <param name="id">l'id nécéssaire pour retrouver le bon user</param>
-        /// <param name="pass"></param>
-        /// <param name="surname"></param>
-        /// <param name="email"></param>
-        /// <param name="name"></param>
-        /// <returns>l'utilisateur modifié</returns>
-        /// <response code="401">La clé de connexion a été refusé</response>
-        /// <response code="400">Entrés invalide</response>
+        /// <param name="connexionId">connexion key</param>
+        /// <param name="id">the id to find the user</param>
+        /// <param name="pass">the new password</param>
+        /// <param name="surname">the new surname</param>
+        /// <param name="email">the new email</param>
+        /// <param name="name">the new name</param>
+        /// <returns>the user edited</returns>
+        /// <response code="401">key connexion refused or not the good one</response>
+        /// <response code="400">invalid entries</response>
         [HttpPut("edit")]
-        public async Task<IActionResult> EditUserInfo(int id, string? pass, string? surname, string? name, string? email)
+        public async Task<IActionResult> EditUserInfo(string connexionId, int id, string? pass, string? surname, string? name, string? email)
         {
+            if (await PathTools.CheckKey(_context, connexionId) == false)
+                return await LogsResult.LogAndResult("user/edit - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
+
             PATHUser? u = await _context.Users.FirstOrDefaultAsync(x => x.pu_id == id);
 
-            u.pu_surname = surname;
-            u.pu_password = pass;
-            u.pu_name = name;
-            u.pu_email = email;
-            u.pu_admin = false;
-
-            _context.Update(u);
-            await _context.SaveChangesAsync();
             if (u == null)
             {
-                return Ok(Json("no User with this logs"));
+                return await LogsResult.LogAndResult("user/edit - no user with this id", TypeLOG.FAIL, connexionId, _context, BadRequest);
             }
             else
             {
-                return Ok(u);
+                if (pass != null)
+                    u.pu_password = pass;
+                if(surname != null)
+                    u.pu_surname = surname;
+                if(name != null)
+                    u.pu_name = name;
+                if(email != null)
+                    u.pu_email = email;
+
+                _context.Update(u);
+                await _context.SaveChangesAsync();
+                return await LogsResult.LogAndResult("user/edit - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(PathUserParsed.CreateFromModel(u), "success editing"));
             }
+           
         }
     }
 }
