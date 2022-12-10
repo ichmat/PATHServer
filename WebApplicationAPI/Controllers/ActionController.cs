@@ -42,7 +42,7 @@ namespace WebApplicationAPI.Controllers
                 {
                     await Server.instance.SendBroadcast(actionTrigger!.act_name, val);
                     // CHECK SENDING
-                    return Ok();
+                    return Ok(PathTools.GetJsonResponse(actionTrigger,"Action done"));
                 }
                 else
                 {
@@ -72,7 +72,27 @@ namespace WebApplicationAPI.Controllers
             else
             {
                 List<ActionTriggerParsed> triggerParseds = nd.ConvertAll(x => ActionTriggerParsed.CreateFromModel(x));
-                return Ok(Json(triggerParseds));
+                return Ok(PathTools.GetJsonResponse(triggerParseds, "Sucess : List of Action "));
+            }
+        }
+
+        /// <summary>
+        /// Get all actions that user can do
+        /// </summary>
+        /// <param name="id">UserId</param>
+        /// <returns>JSON of all <see cref="ActionHistory"/></returns>
+        [HttpGet("actionhistory")]
+        public async Task<IActionResult> GetActionHistory(int id)
+        {
+            List<ActionHistory> nd =  _context.ActionHistories.Select(row => row).Where(row => row.pu_id == id).ToList();
+
+            if (nd == null)
+            {
+                return Ok(PathTools.GetJsonResponse("Empty Data"));
+            }
+            else
+            {
+                return Ok(PathTools.GetJsonResponse(nd, "Sucess List of Action "));
             }
         }
     }

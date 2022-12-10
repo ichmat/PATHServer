@@ -22,5 +22,16 @@ namespace PATHServer
 
             return JsonConvert.SerializeObject(rt);
         }
+
+        public static string GetJsonResponse( string message)
+        {
+
+            object rt = new
+            {
+                Message = message
+            };
+
+            return JsonConvert.SerializeObject(rt);
+        }
     }
 }
