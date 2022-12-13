@@ -99,9 +99,9 @@ namespace WebApplicationAPI.Controllers
                 c.key_id = Guid.NewGuid().ToString();
                 c.pu_id = nd.pu_id;
                 c.key_quota = 0;
-                c.key_quotaRefresh = DateTime.UtcNow;
-                c.key_lastUpdated = DateTime.UtcNow;
-                c.key_created = DateTime.UtcNow;
+                c.key_quotaRefresh = DateTime.Now;
+                c.key_lastUpdated = DateTime.Now;
+                c.key_created = DateTime.Now;
                 _context.Add(c);
                 await _context.SaveChangesAsync(true);
                 return await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));

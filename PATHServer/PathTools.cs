@@ -62,9 +62,9 @@ namespace PATHServer
                 return false;
             }
 
-            TimeSpan quotaRefresh = DateTime.Now.ToUniversalTime() - currentkey.key_quotaRefresh.ToUniversalTime();
+            TimeSpan quotaRefresh = DateTime.Now - currentkey.key_quotaRefresh;
 
-            TimeSpan lifeTimeKey = DateTime.Now.ToUniversalTime() - currentkey.key_lastUpdated.ToUniversalTime();
+            TimeSpan lifeTimeKey = DateTime.Now - currentkey.key_lastUpdated;
 
             //Verifie si la clé a expiré
             if (lifeTimeKey > EXPIRATION_TIME)

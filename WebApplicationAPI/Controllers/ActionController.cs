@@ -45,7 +45,7 @@ namespace WebApplicationAPI.Controllers
                 {
                     await Server.instance.SendBroadcast(actionTrigger!.act_name, val!);
                     // AWAIT CHECK SENDING
-                    return await LogsResult.LogAndResult("action/execute - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(actionTrigger, "Action done"));
+                    return await LogsResult.LogAndResult("action/execute - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse("Action done"));
                 }
                 else
                 {
