@@ -1,11 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PATHServer;
+using PATHServer.ArduinoAction;
 using PATHServer.BDD.Models;
 
 namespace WebApplicationAPI.Controllers
 {
     public static class LogsResult
     {
+        internal async static Task<bool> SaveActionAsHistory(MyDbContext _context, ActionTrigger action, string connexionKey, string actionName, string actionData)
+        {
+            PATHUser? user = await PathTools.GetUserByConnexionKey(_context, connexionKey);
+            if(user != null)
+            {
+                ActionHistory history = new ActionHistory();
+                history.ah_date = DateTime.Now;
+                history.pu_id = user.pu_id;
+                history.ahi_id = await ActionIdentifier.GetActionHistoryInfo(_context, actionName, actionData);
+                history.act_id = action.act_id;
+                await _context.AddAsync(history);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         internal async static Task<IActionResult> InternalError(Exception ex, string ou, string connexionKey, MyDbContext _context, Func<int, object?, IActionResult> result)
         {
             try
@@ -28,7 +48,7 @@ namespace WebApplicationAPI.Controllers
             string reason = quoi;
             if (quoi.Contains("invalid key"))
             {
-                reason = quoi.Split('-')[0] + " - " + await PathTools.GetReasonKeyFail(_context, connexionKey);
+                reason = quoi.Split('-')[0] + "- " + await PathTools.GetReasonKeyFail(_context, connexionKey);
             }
             Log l = Log.GenerateLog(reason, type, user != null ? user.pu_id :null);
             _context.Add(l);

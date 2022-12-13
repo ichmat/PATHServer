@@ -82,7 +82,7 @@ namespace PATHServer
                 if (quotaRefresh > QUOTA_REFRESH)
                 {
                     // reset du quota
-                    currentkey.key_quotaRefresh = DateTime.Now.ToUniversalTime();
+                    currentkey.key_quotaRefresh = DateTime.Now;
                     currentkey.key_quota = 1;
                 }
                 else
@@ -90,7 +90,7 @@ namespace PATHServer
                     // incrémentation du quota
                     currentkey.key_quota++;
                 }
-                currentkey.key_lastUpdated = DateTime.Now.ToUniversalTime(); // rafraîchit la validité de la clé
+                currentkey.key_lastUpdated = DateTime.Now; // rafraîchit la validité de la clé
                 try
                 {
                     _context.Update(currentkey);

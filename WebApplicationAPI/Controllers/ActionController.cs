@@ -45,6 +45,7 @@ namespace WebApplicationAPI.Controllers
                 {
                     await Server.instance.SendBroadcast(actionTrigger!.act_name, val!);
                     // AWAIT CHECK SENDING
+                    await LogsResult.SaveActionAsHistory(_context, actionTrigger, connexionId, actionName, actionData);
                     return await LogsResult.LogAndResult("action/execute - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse("Action done"));
                 }
                 else
@@ -54,7 +55,7 @@ namespace WebApplicationAPI.Controllers
             }
             else
             {
-                return await LogsResult.LogAndResult("action/execute - action not found", TypeLOG.FAIL, connexionId, _context, NotFound);
+                return await LogsResult.LogAndResult("action/execute - action not found", TypeLOG.WARNING, connexionId, _context, NotFound);
             }
         }
 
@@ -73,7 +74,7 @@ namespace WebApplicationAPI.Controllers
 
             if (nd == null)
             {
-                return await LogsResult.LogAndResult("action/list - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse("no node"));
+                return await LogsResult.LogAndResult("action/list - no node", TypeLOG.WARNING, connexionId, _context, Ok, PathTools.GetJsonResponse("no node"));
             }
             else
             {
@@ -86,7 +87,7 @@ namespace WebApplicationAPI.Controllers
         /// get historic of the actions made by a user
         /// </summary>
         /// <param name="connexionId">key connexion</param>
-        /// <param name="id">if of the user</param>
+        /// <param name="id">id of the user</param>
         /// <returns></returns>
         [HttpGet("history")]
         public async Task<IActionResult> GetActionHistory(string connexionId, int id)
@@ -94,15 +95,15 @@ namespace WebApplicationAPI.Controllers
             if (await PathTools.CheckKey(_context, connexionId) == false)
                 return await LogsResult.LogAndResult("action/history - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
 
-            List<ActionHistory> nd = _context.ActionHistories.Select(row => row).Where(row => row.pu_id == id).ToList();
+            List<ActionHistory> nd = _context.ActionHistories.Where(row => row.pu_id == id).ToList();
 
             if (nd == null)
             {
-                return await LogsResult.LogAndResult("action/history - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse("Empty Data"));
+                return await LogsResult.LogAndResult("action/history - Empty Data", TypeLOG.WARNING, connexionId, _context, Ok, PathTools.GetJsonResponse("Empty Data"));
             }
             else
             {
-                return await LogsResult.LogAndResult("action/history - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(nd, "Sucess List of History"));
+                return await LogsResult.LogAndResult("action/history - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(nd, "Success List of History"));
             }
         }
     }

@@ -38,6 +38,7 @@ namespace PATHServer
         public Server()
         {
             _ardCom = new ArdCom();
+            ActionIdentifier.Init();
         }
 #if DEBUG
         public async Task StartTest()
@@ -47,6 +48,19 @@ namespace PATHServer
 
 #endif
 
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
 
         public bool IsValidData(InfoTypeData waiting, string actionData, out string? val)
         {
@@ -119,7 +133,7 @@ namespace PATHServer
             _mqttServer.InterceptingPublishAsync += _mqttServer_InterceptingPublishAsync;
             _mqttServer.ClientDisconnectedAsync += _mqttServer_ClientDisconnectedAsync;
             await _mqttServer.StartAsync();
-            OnServerLog?.Invoke("server started");
+            OnServerLog?.Invoke("server started : " + GetLocalIPAddress());
         }
 
         private Task _mqttServer_ClientDisconnectedAsync(ClientDisconnectedEventArgs arg)

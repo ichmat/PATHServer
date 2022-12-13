@@ -11,7 +11,7 @@ namespace PATHServer.BDD.Models
     public class ActionTrigger
     {
         [Key]
-        public int ah_id { get; set; }
+        public int act_id { get; set; }
 
 
         [Required]

@@ -25,7 +25,7 @@ namespace WebApplicationAPI.Controllers
         }
 
         /// <summary>
-        /// Créer un utilisateur
+        /// Create an user
         /// </summary>
         /// <param name="connexionId">connexion key</param>
         /// <param name="surname">surname of the new user</param>
@@ -47,8 +47,8 @@ namespace WebApplicationAPI.Controllers
         ///  }
         ///
         /// </remarks>
-        /// <response code="401">La clé de connexion a été refusé</response>
-        /// <response code="400">Entrés invalide</response>
+        /// <response code="401">Error with connexonId</response>
+        /// <response code="400">Invalid entries</response>
         [HttpPost("create")]
         public async Task<IActionResult> Create(string connexionId, string surname, string name, string email, string password)
         {
