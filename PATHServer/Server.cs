@@ -39,6 +39,7 @@ namespace PATHServer
         {
             _ardCom = new ArdCom();
             ActionIdentifier.Init();
+            DataLiveManager.Init();
         }
 #if DEBUG
         public async Task StartTest()
@@ -196,7 +197,9 @@ namespace PATHServer
         {
             _ardCom.RecieveMessage(arg.ClientId,
                 arg.ApplicationMessage.Topic,
-                UTF8Encoding.UTF8.GetString(arg.ApplicationMessage.Payload)).Wait();
+                (arg.ApplicationMessage.Payload != null ?
+                UTF8Encoding.UTF8.GetString(arg.ApplicationMessage.Payload) : string.Empty)
+                ).Wait();
             return Task.CompletedTask;
         }
 
