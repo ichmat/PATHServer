@@ -1,13 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Graph;
+using Microsoft.Graph.TermStore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PATHServer.BDD.Models;
+using PATHServer.ModelParser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using WebApplicationAPI;
-
 namespace PATHServer
 {
     public class PathTools
@@ -39,7 +45,7 @@ namespace PATHServer
 
         public bool VerifyPassword(PATHUser user, string password) => BCrypt.Net.BCrypt.Verify(password, user.pu_password);
 
-        private static readonly TimeSpan EXPIRATION_TIME = TimeSpan.FromMinutes(30);
+        private static readonly TimeSpan EXPIRATION_TIME = TimeSpan.FromDays(30);
         private static readonly TimeSpan QUOTA_REFRESH = TimeSpan.FromMinutes(1);
         private static readonly int QUOTA_LIMIT = 50;
 
@@ -137,5 +143,33 @@ namespace PATHServer
                     "expiration in " + lifeTimeKey.ToString("g") + " ( expiration duration : " + EXPIRATION_TIME.ToString("g") + " )";
             }
         }
+        public static List<T> PaginationFilter<T>(IEnumerable<T> intialList, int? pageNumber = 10, int? pageSize = 1) where T : class
+        {
+            var totalData = pageSize + pageNumber;
+            if (totalData > intialList.Count() || totalData < 0)
+            {
+                throw new ArgumentException("index outside of list");
+            }
+
+            return intialList.Skip((int)pageNumber).Take((int)pageSize).ToList();
+        }
+        public static Object ToParsed(object obj)
+        {
+            switch (obj)
+            {
+                case ActionTrigger classObj:
+                    return ActionTriggerParsed.CreateFromModel(classObj);
+                case PATHUser classObj:
+                    return PathUserParsed.CreateFromModel(classObj);
+                case Node classObj:
+                    return NodeParsed.CreateFromModel(classObj);
+                case DataHistory classObj:
+                    return DataHistoryParsed.CreateFromModel(classObj);
+                default:
+                    throw new ArgumentNullException();
+            }
+        }
     }
+
 }
+
