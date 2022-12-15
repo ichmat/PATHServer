@@ -50,7 +50,7 @@ namespace PATHServer.ArduinoAction
                 ActionHistoryInfo newinfo = new ActionHistoryInfo();
                 newinfo.ahi_name = actionTranslated;
                 await _content.AddAsync(newinfo);
-                await _content.SaveChangesAsync();
+                await _content.WaitSaveChangesAsync();
                 newinfo = await _content.ActionHistoryInfos.FirstAsync(x => x.ahi_name == actionTranslated);
                 caches_actionHistory.Add(action, newinfo.ahi_id);
                 return newinfo.ahi_id;

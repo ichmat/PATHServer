@@ -144,7 +144,7 @@ namespace PATHServer.ArduinoAction
                 Log("⚠ data not created, unsuported type");
                 return;
             }
-            await dbContext.SaveChangesAsync();
+            await dbContext.WaitSaveChangesAsync();
         }
 
         private async Task InitNodes(MyDbContext dbContext, string message)
@@ -206,7 +206,7 @@ namespace PATHServer.ArduinoAction
             if (!nodeCreated)
                 Log("Already up to date");
             else
-                await dbContext.SaveChangesAsync();
+                await dbContext.WaitSaveChangesAsync();
             Log("--- End Init ---");
         }
 

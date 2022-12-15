@@ -33,7 +33,7 @@ namespace WebApplicationAPI.Controllers
                 PATHUser? user = await  PathTools.GetUserByConnexionKey(_context, connexionKey);
                 Log l = Log.GenerateLog(ou + " error message : " + ex.Message + " Stacktrace : " + ex.StackTrace, TypeLOG.FATAL, user != null ? user.pu_id : null);
                 _context.Add(l);
-                await _context.SaveChangesAsync(true);
+                await _context.WaitSaveChangesAsync(true);
                 return result!.Invoke(500, ex);
             }
             catch
@@ -52,7 +52,7 @@ namespace WebApplicationAPI.Controllers
             }
             Log l = Log.GenerateLog(reason, type, user != null ? user.pu_id :null);
             _context.Add(l);
-            await _context.SaveChangesAsync(true);
+            await _context.WaitSaveChangesAsync(true);
             return result!.Invoke(reason);
         }
 
@@ -61,7 +61,7 @@ namespace WebApplicationAPI.Controllers
             PATHUser? user = await PathTools.GetUserByConnexionKey(_context, connexionKey);
             Log l = Log.GenerateLog(quoi, type, user != null ? user.pu_id : null);
             _context.Add(l);
-            await _context.SaveChangesAsync(true);
+            await _context.WaitSaveChangesAsync(true);
             return result!.Invoke(objToReturn);
         }
     }

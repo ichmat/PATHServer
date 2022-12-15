@@ -32,4 +32,13 @@ public class MyDbContext : DbContext
         // Map table names
         base.OnModelCreating(modelBuilder);
     }
+
+    private static SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+
+    public async Task WaitSaveChangesAsync(bool acceptAllChangeOnSuccess = true)
+    {
+        await semaphore.WaitAsync();
+        await this.SaveChangesAsync(acceptAllChangeOnSuccess);
+        semaphore.Release();
+    }
 }
