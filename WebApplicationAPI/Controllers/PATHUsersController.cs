@@ -102,7 +102,7 @@ namespace WebApplicationAPI.Controllers
                 c.key_lastUpdated = DateTime.Now;
                 c.key_created = DateTime.Now;
                 _context.Add(c);
-                return await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));
+                return Ok(PathTools.GetJsonResponse(PathTools.ToParsed(nd), "Ca marche Ok !"));//await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));
             }
         }
 
