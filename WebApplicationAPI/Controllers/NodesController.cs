@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -29,24 +30,40 @@ namespace WebApplicationAPI.Controllers
         /// Get All Node
         /// </summary>
         /// <param name="connexionId">key connexion</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="pageNumber">Index page</param>
         /// <returns>list of node</returns>
         /// <response code="401">Error with connexonId</response>
         /// <response code="400">Invalid entries</response>
         [HttpGet("list")]
-        public async Task<IActionResult> GetNodeList(string connexionId)
+        public async Task<IActionResult> GetNodeList(string connexionId, int? pageSize, int? pageNumber)
         {
             if (await PathTools.CheckKey(_context, connexionId) == false)
                 return await LogsResult.LogAndResult("node/list - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
+            List<Node> nodeList = new();
+            List<NodeParsed> parsedNodeList = new();
+            try
+            {
+                 nodeList = PathTools.PaginationFilter(_context.Nodes, pageNumber, pageSize);
+               
+            }
+            catch
+            {
+                return await LogsResult.LogAndResult("node/list - index outside of list", TypeLOG.ERROR, connexionId, _context, Ok, PathTools.GetJsonResponse("index outside of list"));
+            }
 
-            List<NodeParsed> nd = _context.Nodes.Select(row => NodeParsed.CreateFromModel(row)).ToList();
-            
-            if (nd == null)
+            foreach (Node node in nodeList)
+            {
+                parsedNodeList.Add((NodeParsed)PathTools.ToParsed(node));
+            }
+
+            if (parsedNodeList == null)
             {
                 return await LogsResult.LogAndResult("node/list - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse("no node"));
             }
             else
             {
-                return await LogsResult.LogAndResult("node/list - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(nd, "Ok"));
+                return await LogsResult.LogAndResult("node/list - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(parsedNodeList, "Ok"));
             }
         }
 
@@ -78,7 +95,8 @@ namespace WebApplicationAPI.Controllers
             }
             else
             {
-                NodeParsed np = NodeParsed.CreateFromModel(nd);
+
+                NodeParsed np = PathTools.ToParsed((nd));
                 return await LogsResult.LogAndResult("node/name - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(np, "Ok"));
             }
         }
@@ -113,7 +131,7 @@ namespace WebApplicationAPI.Controllers
             }
             else
             {
-                NodeParsed parsedNode = NodeParsed.CreateFromModel(nd);
+                NodeParsed parsedNode = PathTools.ToParsed(nd);
                 return await LogsResult.LogAndResult("node/id - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(parsedNode, "Ok"));
             }
         }
@@ -146,7 +164,7 @@ namespace WebApplicationAPI.Controllers
                 }
                 else
                 {
-                    return await LogsResult.LogAndResult("node/lastdata - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(DataHistoryParsed.CreateFromModel(dataHistory), "Ok"));
+                    return await LogsResult.LogAndResult("node/lastdata - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(PathTools.ToParsed(dataHistory), "Ok"));
                 }
             }
         }
