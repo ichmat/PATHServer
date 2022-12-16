@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientTest", "ClientTest\Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServeurTest", "ServeurTest\ServeurTest.csproj", "{6F3FE723-7234-478A-BD86-AF2A180F5389}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplicationAPI", "WebApplicationAPI\WebApplicationAPI.csproj", "{DE0412EE-6DF8-4C03-AD4C-5B1F72D5919B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplicationAPI", "WebApplicationAPI\WebApplicationAPI.csproj", "{DE0412EE-6DF8-4C03-AD4C-5B1F72D5919B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Postman Collections", "Postman Collections", "{476EB01E-0B56-4DF6-8630-1E8327835274}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.txt = Readme.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
