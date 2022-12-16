@@ -102,7 +102,7 @@ namespace WebApplicationAPI.Controllers
                 c.key_lastUpdated = DateTime.Now;
                 c.key_created = DateTime.Now;
                 _context.Add(c);
-                return Ok(PathTools.GetJsonResponse(PathTools.ToParsed(nd), "Ca marche Ok !"));//await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));
+                return Ok(PathTools.GetJsonResponse(nd.ToParsed(), "Ca marche Ok !"));//await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));
             }
         }
 
@@ -143,7 +143,7 @@ namespace WebApplicationAPI.Controllers
 
                 _context.Update(u);
                 await _context.WaitSaveChangesAsync();
-                return await LogsResult.LogAndResult("user/edit - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(PathUserParsed.CreateFromModel(u), "success editing"));
+                return await LogsResult.LogAndResult("user/edit - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(u.ToParsed(), "success editing"));
             }
            
         }
