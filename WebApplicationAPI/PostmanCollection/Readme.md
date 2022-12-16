@@ -1,6 +1,3 @@
-﻿namespace WebApplicationAPI.PostmanCollection
-{
-    public class Readme
-    {
-    }
-}
+﻿# Foobar
+
+Directory with the postman Test
