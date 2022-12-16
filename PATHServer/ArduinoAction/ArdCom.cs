@@ -18,6 +18,8 @@ namespace PATHServer.ArduinoAction
         private const string TOPIC_INIT = "init";
         private const string TOPIC_VALIDATE = "validate";
 
+        private readonly Dictionary<string, InfoTypeData> _event = new Dictionary<string, InfoTypeData>();
+
         public ArdCom()
         {
             validated = new Dictionary<string, bool>();
@@ -76,6 +78,12 @@ namespace PATHServer.ArduinoAction
         {
             if (!string.IsNullOrWhiteSpace(topic))
             {
+                if (_event.ContainsKey(topic))
+                {
+                    // 
+                    return;
+                }
+
                 Node? find = await dbContext.Nodes.FirstOrDefaultAsync(x => x.node_name == topic);
                 if (find != null)
                 {
@@ -164,6 +172,7 @@ namespace PATHServer.ArduinoAction
                     {
                         if (ArdConverter.IsAction(dataType, out InfoTypeData? type))
                         {
+                            // CREATE ActionTrigger
                             ActionTrigger? find = await dbContext.ActionTriggers.FirstOrDefaultAsync(x => x.act_name == nodeName);
                             if(find == null)
                             {
@@ -173,10 +182,18 @@ namespace PATHServer.ArduinoAction
                                 nodeCreated = true;
                                 await dbContext.ActionTriggers.AddAsync(a);
                             }
+                        }else if(ArdConverter.IsEvent(dataType, out InfoTypeData? typeEvent))
+                        {
+                            if (!_event.ContainsKey(nodeName))
+                            {
+                                _event.Add(nodeName, typeEvent!.Value);
+                                nodeCreated = true;
+                            }
                         }
                         else if (ArdConverter.IsTypeData(dataType, out InfoTypeData? typeData) &&
                         typeData != InfoTypeData.Rbg)
                         {
+                            // CREATE Node
                             Node? find = await dbContext.Nodes.FirstOrDefaultAsync(x => x.node_name == nodeName);
                             if (find == null)
                             {

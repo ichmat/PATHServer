@@ -8,6 +8,7 @@ namespace PATHServer.BDD.Models
 {
     public enum InfoTypeData
     {
+        Null = -1,
         Date = 0,
         Double = 1,
         Int = 2,
