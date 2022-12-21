@@ -71,9 +71,9 @@ namespace WebApplicationAPI.Controllers
             {
                 u.pu_admin = false;
             }
-            
+
             _context.Add(u);
-            return await LogsResult.LogAndResult("user/create - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathUserParsed.CreateFromModel(u));
+            return await LogsResult.LogAndResult("user/create - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(u.ToParsed(),"Utilisateur : "+email+" crée"));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace WebApplicationAPI.Controllers
         /// <returns>The key of connexion</returns>
         /// <response code="400">Invalid entries</response>
         [HttpPost("connect")]
-        public async Task<IActionResult> ConnectUser(string email, string password)
+        public async Task<IActionResult> ConnectUser(string email, string password, string? connexionId)
         {
             PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_email == email && x.pu_password == password);
 
@@ -102,8 +102,37 @@ namespace WebApplicationAPI.Controllers
                 c.key_lastUpdated = DateTime.Now;
                 c.key_created = DateTime.Now;
                 _context.Add(c);
-                return await LogsResult.LogAndResult("user/connect - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, ""));
+                return await LogsResult.LogAndResult("user/create - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(nd.ToParsed(), "Utilisateur : " + email + " Connecté"));
             }
+        }
+        /// <summary>
+        /// Supprime un utilisateur
+        /// </summary>
+        /// <param name="connexionId">connexion key</param>
+        /// <param name="pass">the new password</param>
+        /// <param name="email">the new email</param>
+        /// <returns>the user edited</returns>
+        /// <response code="401">key connexion refused or not the good one</response>
+        /// <response code="400">invalid entries</response>
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser(string connexionId, string pass, string email)
+        {
+            if (await PathTools.CheckKey(_context, connexionId) == false)
+                return await LogsResult.LogAndResult("user/delete - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
+
+            PATHUser? u = await _context.Users.FirstOrDefaultAsync(x => x.pu_email == email && x.pu_password == pass);
+            
+            if (u == null)
+            {
+                return await LogsResult.LogAndResult("user/delete - no user with this id", TypeLOG.FAIL, connexionId, _context, BadRequest);
+            }
+            else
+            {
+                _context.Remove(u);
+                await _context.WaitSaveChangesAsync();
+                return await LogsResult.LogAndResult("user/delete - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(u.ToParsed(), "Delete success for User :"+email+""));
+            }
+
         }
 
         /// <summary>
@@ -143,7 +172,7 @@ namespace WebApplicationAPI.Controllers
 
                 _context.Update(u);
                 await _context.WaitSaveChangesAsync();
-                return await LogsResult.LogAndResult("user/edit - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(PathUserParsed.CreateFromModel(u), "success editing"));
+                return await LogsResult.LogAndResult("user/edit - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(u.ToParsed(), "success editing"));
             }
            
         }

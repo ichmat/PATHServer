@@ -95,8 +95,7 @@ namespace WebApplicationAPI.Controllers
             }
             else
             {
-
-                NodeParsed np = (NodeParsed)PathTools.ToParsed((nd));
+                NodeParsed np = (NodeParsed)PathTools.ToParsed(nd);
                 return await LogsResult.LogAndResult("node/name - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(np, "Ok"));
             }
         }
@@ -124,14 +123,14 @@ namespace WebApplicationAPI.Controllers
             if (await PathTools.CheckKey(_context, connexionId) == false)
                 return await LogsResult.LogAndResult("node/id - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
 
-            Node? nd = await _context.Nodes.FirstOrDefaultAsync(x => x.node_id == nodeid);
+            Node? nd =  _context.Nodes.FirstOrDefault(x => x.node_id == nodeid);
             if (nd == null)
             {
                 return await LogsResult.LogAndResult("node/name - no node found with this id", TypeLOG.WARNING, connexionId, _context, NotFound);
             }
             else
             {
-                NodeParsed parsedNode = (NodeParsed)PathTools.ToParsed(nd);
+                NodeParsed parsedNode = PathTools.ToParsed(nd);
                 return await LogsResult.LogAndResult("node/id - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(parsedNode, "Ok"));
             }
         }

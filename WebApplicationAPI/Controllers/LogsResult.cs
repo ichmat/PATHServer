@@ -42,7 +42,7 @@ namespace WebApplicationAPI.Controllers
             }
         }
 
-        internal async static Task<IActionResult> LogAndResult(string quoi, TypeLOG type, string connexionKey, MyDbContext _context, Func<object, IActionResult> result)
+        internal async static Task<IActionResult> LogAndResult(string quoi, TypeLOG type, string? connexionKey, MyDbContext _context, Func<object, IActionResult> result)
         {
             PATHUser? user = await PathTools.GetUserByConnexionKey(_context, connexionKey);
             string reason = quoi;

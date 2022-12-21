@@ -22,4 +22,8 @@
     <ProjectReference Include="..\PATHServer\PATHServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

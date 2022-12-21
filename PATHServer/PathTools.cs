@@ -16,7 +16,7 @@ using System.Xml.Linq;
 using WebApplicationAPI;
 namespace PATHServer
 {
-    public class PathTools
+    public static class PathTools
     {
         public static string GetJsonResponse(object obj, string message)
         {
@@ -41,9 +41,9 @@ namespace PATHServer
             return JsonConvert.SerializeObject(rt);
         }
 
-        public string GenerateEncryptedPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
+        public static string GenerateEncryptedPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
 
-        public bool VerifyPassword(PATHUser user, string password) => BCrypt.Net.BCrypt.Verify(password, user.pu_password);
+        public static bool  VerifyPassword(PATHUser user, string password) => BCrypt.Net.BCrypt.Verify(password, user.pu_password);
 
         private static readonly TimeSpan EXPIRATION_TIME = TimeSpan.FromDays(30);
         private static readonly TimeSpan QUOTA_REFRESH = TimeSpan.FromMinutes(1);
@@ -153,7 +153,7 @@ namespace PATHServer
 
             return intialList.Skip((int)pageNumber).Take((int)pageSize).ToList();
         }
-        public static Object ToParsed(object obj)
+        public static Object ToParsed(this object obj)
         {
             switch (obj)
             {
