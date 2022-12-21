@@ -40,6 +40,13 @@ namespace WebApplicationAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Publish a data live
+        /// </summary>
+        /// <param name="connexionId">key connexion</param>
+        /// <param name="liveName">the name</param>
+        /// <param name="liveData">the data to publish</param>
+        /// <returns></returns>
         [HttpPost("publish")]
         public async Task<IActionResult> Publish(string connexionId, string liveName, string liveData)
         {

@@ -96,7 +96,7 @@ namespace WebApplicationAPI.Controllers
             else
             {
 
-                NodeParsed np = PathTools.ToParsed((nd));
+                NodeParsed np = (NodeParsed)PathTools.ToParsed((nd));
                 return await LogsResult.LogAndResult("node/name - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(np, "Ok"));
             }
         }
@@ -131,7 +131,7 @@ namespace WebApplicationAPI.Controllers
             }
             else
             {
-                NodeParsed parsedNode = PathTools.ToParsed(nd);
+                NodeParsed parsedNode = (NodeParsed)PathTools.ToParsed(nd);
                 return await LogsResult.LogAndResult("node/id - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(parsedNode, "Ok"));
             }
         }

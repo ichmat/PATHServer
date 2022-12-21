@@ -60,7 +60,7 @@ namespace PATHServer.ArduinoAction
                 else if (value is bool b)
                     live.dl_val_bool = b;
 
-                triggerPublishedData();
+                triggerPublishedData(live.dl_name, value);
                 return string.Empty;
             }
             else
@@ -92,10 +92,14 @@ namespace PATHServer.ArduinoAction
             }
         }
 
-        private static void triggerPublishedData()
+        private static void triggerPublishedData(string liveName, object? value)
         {
-
+            OnPublishedData?.Invoke(liveName, value);
         }
+
+        public delegate void PublishedData(string liveName, object? value);
+
+        public static event PublishedData? OnPublishedData;
     }
 
     internal struct DataLiveLoad
