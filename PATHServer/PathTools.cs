@@ -143,15 +143,25 @@ namespace PATHServer
                     "expiration in " + lifeTimeKey.ToString("g") + " ( expiration duration : " + EXPIRATION_TIME.ToString("g") + " )";
             }
         }
-        public static List<T> PaginationFilter<T>(IEnumerable<T> intialList, int? pageNumber = 10, int? pageSize = 1) where T : class
+        public static List<T> PaginationFilter<T>(IEnumerable<T> intialList, int? indexStart, int? pageSize) where T : class
         {
-            var totalData = pageSize + pageNumber;
-            if (totalData > intialList.Count() || totalData < 0)
+            if (indexStart == null) indexStart = 0;
+            if (pageSize == null) pageSize = 10;
+
+            if (indexStart >= intialList.Count())
             {
                 throw new ArgumentException("index outside of list");
             }
+            if (pageSize < 0)
+            {
+                throw new ArgumentException("invalid pageSize value");
+            }
+            if (indexStart < 0)
+            {
+                throw new ArgumentException("invalid indexStart value");
+            }
 
-            return intialList.Skip((int)pageNumber).Take((int)pageSize).ToList();
+            return intialList.Skip(indexStart!.Value).Take(pageSize!.Value).ToList();
         }
         public static Object ToParsed(this object obj)
         {
@@ -165,6 +175,8 @@ namespace PATHServer
                     return NodeParsed.CreateFromModel(classObj);
                 case DataHistory classObj:
                     return DataHistoryParsed.CreateFromModel(classObj);
+                case DataLive dataLive:
+                    return DataLiveParsed.CreateFromModel(dataLive);
                 default:
                     throw new ArgumentNullException();
             }

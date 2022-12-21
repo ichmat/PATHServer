@@ -18,6 +18,7 @@ using MQTTnet.Protocol;
 using PATHServer.ArduinoAction;
 using System.Text.Unicode;
 using Microsoft.EntityFrameworkCore;
+using PATHServer.ArduinoAction.Automatisation;
 
 namespace PATHServer
 {
@@ -29,7 +30,7 @@ namespace PATHServer
 
         private MqttServer _mqttServer;
 
-        private ArdCom _ardCom;
+        internal ArdCom ardCom;
 
         public delegate void ServerLog(string log);
 
@@ -37,18 +38,16 @@ namespace PATHServer
 
         public Server()
         {
-            _ardCom = new ArdCom();
+            ardCom = new ArdCom();
             ActionIdentifier.Init();
             DataLiveManager.Init();
+            UserTemperature.Init();
         }
-#if DEBUG
+
         public async Task StartTest()
         {
             await StartMQTTServerTest();
         }
-
-#endif
-
 
         public static string GetLocalIPAddress()
         {
@@ -139,7 +138,7 @@ namespace PATHServer
 
         private Task _mqttServer_ClientDisconnectedAsync(ClientDisconnectedEventArgs arg)
         {
-            if (_ardCom.Deconnexion(arg.ClientId))
+            if (ardCom.Deconnexion(arg.ClientId))
             {
                 OnServerLog?.Invoke("Disconnected client");
             }
@@ -195,7 +194,7 @@ namespace PATHServer
 
         private Task _mqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs arg)
         {
-            _ardCom.RecieveMessage(arg.ClientId,
+            ardCom.RecieveMessage(arg.ClientId,
                 arg.ApplicationMessage.Topic,
                 (arg.ApplicationMessage.Payload != null ?
                 UTF8Encoding.UTF8.GetString(arg.ApplicationMessage.Payload) : string.Empty)
@@ -205,7 +204,7 @@ namespace PATHServer
 
         private Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
         {
-            if (_ardCom.NewConnection(arg.ClientId))
+            if (ardCom.NewConnection(arg.ClientId))
             {
                 arg.ReasonCode = MqttConnectReasonCode.Success;
                 OnServerLog?.Invoke("connected client");

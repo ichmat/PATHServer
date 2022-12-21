@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,6 +62,33 @@ namespace PATHServer.ArduinoAction
                     live.dl_val_bool = b;
 
                 triggerPublishedData(live.dl_name, value);
+                return string.Empty;
+            }
+            else
+            {
+                return "data name not found";
+            }
+        }
+
+        public static async Task<string> TryUnset(MyDbContext _context, string dataLiveName)
+        {
+            if (TryGetDataLive(dataLiveName, out DataLiveLoad dataLive))
+            {
+                InfoTypeData type = dataLive.Type;
+
+                if (!dataLive.IsChecked)
+                {
+                    await CheckDataLive(_context, dataLive);
+                    TryGetDataLive(dataLiveName, out dataLive);
+                }
+
+                DataLive live = _context.DataLives.First(x => x.dl_id == dataLive.dl_id);
+                live.dl_val_double = null;
+                live.dl_val_datetime = null;
+                live.dl_val_int = null;
+                live.dl_val_bool = null;
+
+                triggerPublishedData(live.dl_name, null);
                 return string.Empty;
             }
             else

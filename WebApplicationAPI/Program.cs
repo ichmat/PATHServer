@@ -23,7 +23,7 @@ namespace WebApplicationAPI
 #if DEBUG
             Server.instance.StartTest().Wait();
 #else
-            _server.Start();
+            Server.instance.StartTest().Wait();
 #endif
             builder.Services.AddDbContext<MyDbContext>();
 
@@ -59,12 +59,14 @@ namespace WebApplicationAPI
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+#if DEBUG
+
+#else
+            app.Urls.Add("https://" + Server.GetLocalIPAddress() + ":7199");
+#endif
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseCors("corsapp");
 

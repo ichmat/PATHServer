@@ -84,7 +84,7 @@ namespace WebApplicationAPI.Controllers
         /// <returns>The key of connexion</returns>
         /// <response code="400">Invalid entries</response>
         [HttpPost("connect")]
-        public async Task<IActionResult> ConnectUser(string email, string password, string? connexionId)
+        public async Task<IActionResult> ConnectUser(string email, string password)
         {
             PATHUser? nd = await _context.Users.FirstOrDefaultAsync(x => x.pu_email == email && x.pu_password == password);
 
@@ -102,7 +102,7 @@ namespace WebApplicationAPI.Controllers
                 c.key_lastUpdated = DateTime.Now;
                 c.key_created = DateTime.Now;
                 _context.Add(c);
-                return await LogsResult.LogAndResult("user/create - OK", TypeLOG.SUCCESS, connexionId, _context, Ok, PathTools.GetJsonResponse(nd.ToParsed(), "Utilisateur : " + email + " Connecté"));
+                return await LogsResult.LogAndResult("user/create - OK", TypeLOG.SUCCESS, c.key_id, _context, Ok, PathTools.GetJsonResponse(c.key_id, "Utilisateur : " + email + " Connecté"));
             }
         }
         /// <summary>

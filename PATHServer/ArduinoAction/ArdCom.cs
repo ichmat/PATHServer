@@ -20,9 +20,15 @@ namespace PATHServer.ArduinoAction
 
         private readonly Dictionary<string, InfoTypeData> _event = new Dictionary<string, InfoTypeData>();
 
+
         public ArdCom()
         {
             validated = new Dictionary<string, bool>();
+        }
+
+        public bool HaveConnectedUser()
+        {
+            return validated.Count > 0;
         }
 
         public bool NewConnection(string userID)
