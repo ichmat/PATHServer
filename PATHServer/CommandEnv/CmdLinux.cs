@@ -157,6 +157,9 @@ namespace PATHServer.CommandEnv
             throw new NotImplementedException();
         }
 
-       
+        public override string[] GetAllKhowWifi()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
