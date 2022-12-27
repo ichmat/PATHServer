@@ -61,6 +61,56 @@ namespace PATHServer.CommandEnv
             return allWifis.ToArray();
         }
 
+        public override KNOWN_WIFI[] GetAllKnownWifi()
+        {
+            var result = Cli
+                 .Wrap("nmcli")
+                 .WithArguments("connection show")
+                 .ExecuteBufferedAsync();
+
+            result.Task.Wait();
+
+            string[] outputs = result.Task.Result.StandardOutput.Split(Environment.NewLine);
+
+            int i_name_start = -1;
+            int i_name_end = -1;
+
+            int i_uuid_start = -1;
+            int i_uuid_end = -1;
+
+            int i_device_start = -1;
+
+            List<KNOWN_WIFI> khowns = new List<KNOWN_WIFI>();
+
+            foreach (string line in outputs)
+            {
+                if (line.Contains("NAME") && line.Contains("UUID") && line.Contains("TYPE") && line.Contains("DEVICE"))
+                {
+                    i_name_start = line.IndexOf("NAME");
+                    i_name_end = line.IndexOf("UUID") - 1;
+
+                    i_uuid_start = line.IndexOf("UUID");
+                    i_uuid_end = line.IndexOf("TYPE") - 1;
+
+                    i_device_start = line.IndexOf("DEVICE");
+                }
+                else if(line.Length > 0 && !string.IsNullOrWhiteSpace(line))
+                {
+                    string name = NormalizeWhiteSpace(new string(line.Skip(i_name_start).Take(i_name_end - i_name_start + 1).ToArray()));
+                    string uuid = NormalizeWhiteSpace(new string(line.Skip(i_uuid_start).Take(i_uuid_end - i_uuid_start + 1).ToArray()));
+                    string @interface = NormalizeWhiteSpace(new string(line.Skip(i_device_start).ToArray()));
+                    if (@interface.Contains("--")){
+                        khowns.Add(new KNOWN_WIFI(name, uuid, false, null));
+                    }
+                    else{
+                        khowns.Add(new KNOWN_WIFI(name, uuid, true, @interface));
+                    }
+                }
+            }
+
+            return khowns.ToArray();
+        }
+
         public override string? GetConnectedWifi(string @interface)
         {
             var result = Cli
@@ -88,8 +138,7 @@ namespace PATHServer.CommandEnv
                 {
                     if (line.Contains(@interface))
                     {
-                        return line.Skip(i_name_start).Take(i_name_end - i_name_start).ToString();
-                        break;
+                        return NormalizeWhiteSpace(new string(line.Skip(i_name_start).Take(i_name_end - i_name_start).ToArray()));
                     }
                 }
             }
@@ -115,15 +164,20 @@ namespace PATHServer.CommandEnv
 
             if (essid != null)
             {
-                var result = Cli
-                 .Wrap("sudo")
-                 .WithArguments("nmcli connection down id \"" + essid + '"')
-                 .ExecuteBufferedAsync();
-                result.Task.Wait();
-                return result.Task.Result.StandardOutput.Contains("successfully deactivated");
+                TryDisconnectWifi(@interface, essid);
             }
 
             return false;
+        }
+
+        public override bool TryDisconnectWifi(string @interface, string wifi_name)
+        {
+            var result = Cli
+                  .Wrap("sudo")
+                  .WithArguments("nmcli connection down id \"" + wifi_name + '"')
+                  .ExecuteBufferedAsync();
+            result.Task.Wait();
+            return result.Task.Result.StandardOutput.Contains("successfully deactivated");
         }
 
         public override string[] GetWIFIInterfaces()
@@ -157,9 +211,6 @@ namespace PATHServer.CommandEnv
             throw new NotImplementedException();
         }
 
-        public override string[] GetAllKhowWifi()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

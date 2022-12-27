@@ -44,11 +44,12 @@ namespace PATHServer
         public Server()
         {
             IdentifyOS();
+            SearchWifi();
+            SetLocalIPAddress();
             ardCom = new ArdCom();
             ActionIdentifier.Init();
             DataLiveManager.Init();
             UserTemperature.Init();
-            SearchWifi();
         }
 
         private void IdentifyOS()
@@ -69,7 +70,7 @@ namespace PATHServer
             await StartMQTTServerTest();
         }
 
-        public static void SetLocalIPAddress()
+        private static void SetLocalIPAddress()
         {
             List<string> allIp = new List<string>();
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -87,7 +88,7 @@ namespace PATHServer
 
             if(allIp.Count > 1)
             {
-                Console.WriteLine("please select local IP : ");
+                Console.WriteLine("please select local IP for the server : ");
                 for (int i = 0; i < allIp.Count; ++i)
                 {
                     Console.WriteLine(i.ToString() + " : " + allIp[i]);
@@ -292,7 +293,7 @@ namespace PATHServer
 
         private void SearchWifi()
         {
-            if(cmdEnv is CmdLinux)
+            if (cmdEnv is CmdLinux)
             {
                 string[] interfaces = cmdEnv.GetWIFIInterfaces();
                 ConsoleLog("current interfaces", interfaces);
@@ -300,12 +301,14 @@ namespace PATHServer
                 string selectedInterface = interfaces.First();
                 Console.WriteLine("actual interface : " + selectedInterface);
 
-                string? connectedWifi = cmdEnv.GetConnectedWifi(selectedInterface);
-
-                if (connectedWifi != null)
+                KNOWN_WIFI[] _WIFIs = cmdEnv.GetAllKnownWifi();
+                ConsoleLog(_WIFIs);
+                bool isConnectedWifi = _WIFIs.Any(x => x.connected && x.@interface! == selectedInterface);
+                if (isConnectedWifi)
                 {
-                    Console.WriteLine("already connected to : " + connectedWifi + ", try disconnect");
-                    if (cmdEnv.TryDisconnectWifi(selectedInterface))
+                    KNOWN_WIFI connectedWifi = _WIFIs.First(x => x.connected && x.@interface! == selectedInterface);
+                    Console.WriteLine("already connected to : " + connectedWifi.ssid + ", try disconnect ...");
+                    if (cmdEnv.TryDisconnectWifi(selectedInterface, connectedWifi.ssid))
                     {
                         Console.WriteLine("disconnected");
                     }
@@ -315,11 +318,33 @@ namespace PATHServer
                         return;
                     }
                 }
+                else
+                {
+                    Console.WriteLine("no wifi connected");
+                }
 
                 string[] wifis = cmdEnv.GetAllWifiName();
                 ConsoleLog("current wifis", wifis);
 
+                foreach(string wifi in wifis)
+                {
+                    if(_WIFIs.Any(x => x.ssid == wifi))
+                    {
+                        Console.WriteLine("known wifi found : " + wifi + ", try connect ...");
+                        if(cmdEnv.TryConnectWifi(selectedInterface, wifi))
+                        {
+                            Console.WriteLine("connected");
+                        }
+                        else
+                        {
+                            Console.WriteLine("fail connexion");
+                        }
 
+                        return;
+                    }
+                }
+
+                Console.WriteLine("no known wifi detected");
             }
         }
 
@@ -330,6 +355,17 @@ namespace PATHServer
             foreach (string i in infos)
             {
                 Console.WriteLine(i);
+            }
+            Console.WriteLine("");
+        }
+
+        private void ConsoleLog(KNOWN_WIFI[] kNOWN_WIFIs)
+        {
+            Console.WriteLine("khown wifis : ");
+            Console.WriteLine("------------------");
+            foreach (KNOWN_WIFI wifi in kNOWN_WIFIs)
+            {
+                Console.WriteLine("ssid : " + wifi.ssid + ", connected : " + wifi.connected + (wifi.connected ? ", interface : " + wifi.@interface : string.Empty));
             }
             Console.WriteLine("");
         }

@@ -12,7 +12,6 @@ namespace WebApplicationAPI
     {
         public static void Main(string[] args)
         {
-            Server.SetLocalIPAddress();
             var builder = WebApplication.CreateBuilder(args);
 
             IConfiguration configuration = new ConfigurationBuilder()

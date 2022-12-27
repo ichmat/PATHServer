@@ -20,7 +20,7 @@ namespace PATHServer.CommandEnv
             throw new NotImplementedException();
         }
 
-        public override string[] GetAllKhowWifi()
+        public override KNOWN_WIFI[] GetAllKnownWifi()
         {
             throw new NotImplementedException();
         }
@@ -88,6 +88,11 @@ namespace PATHServer.CommandEnv
         }
 
         public override bool TryDisconnectWifi(string @interface)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool TryDisconnectWifi(string @interface, string wifi_name)
         {
             throw new NotImplementedException();
         }
