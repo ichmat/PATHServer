@@ -50,11 +50,9 @@ namespace PATHServer.ArduinoAction.Automatisation
             _stop_pending = true;
         }
 
-        private static void LogIfDebug(string log)
+        private static void Log(string log)
         {
-#if DEBUG
             Server.instance.Log(log);
-#endif
         }
 
         private static void DataLiveManager_OnPublishedData(string liveName, object? value)
@@ -85,7 +83,7 @@ namespace PATHServer.ArduinoAction.Automatisation
                         if (_last_temperature != null || TryGetLastTemperatureFromUser())
                         {
                             _state = UserTempThreadState.Started;
-                            LogIfDebug("UserTemperature : started");
+                            Log("UserTemperature : started");
                         }
                         else
                         {
@@ -95,7 +93,7 @@ namespace PATHServer.ArduinoAction.Automatisation
                     case UserTempThreadState.TempNotLoaded:
                         if(_last_temperature != null)
                         {
-                            LogIfDebug("UserTemperature : temperature set");
+                            Log("UserTemperature : temperature set");
                             _state = UserTempThreadState.Started;
                         }
                         break;
@@ -112,7 +110,7 @@ namespace PATHServer.ArduinoAction.Automatisation
                             FanState(false);
                             HeatingState(false);
                             _state = UserTempThreadState.TempNotLoaded;
-                            LogIfDebug("UserTemperature : temperature unset");
+                            Log("UserTemperature : temperature unset");
                         }
                         break;
                 }
@@ -126,7 +124,7 @@ namespace PATHServer.ArduinoAction.Automatisation
                 double deltamin = _last_temperature!.Value - DELTA_TEMPERATURE;
                 double deltamax = _last_temperature!.Value + DELTA_TEMPERATURE;
 
-                //LogIfDebug("actual temperature : " + temperature.ToString() + " user want : " + _last_temperature.ToString()); 
+                Log("actual temperature : " + temperature.ToString() + " user want : " + _last_temperature.ToString()); 
 
                 if (temperature < deltamin)
                 {
@@ -152,6 +150,7 @@ namespace PATHServer.ArduinoAction.Automatisation
         {
             using (var context = new MyDbContext())
             {
+                context.Database.EnsureCreated();
                 DataLive? dataLive = context.DataLives.FirstOrDefault(x => x.dl_name== DATA_LIVE_NAME);
                 if(dataLive != null && dataLive.dl_val_double != null)
                 {
@@ -160,7 +159,7 @@ namespace PATHServer.ArduinoAction.Automatisation
                 }
                 else
                 {
-                    LogIfDebug("UserTemperature : no temperature setted from datalive");
+                    Log("UserTemperature : no temperature setted from datalive");
                     return false;
                 }
             }
@@ -203,7 +202,7 @@ namespace PATHServer.ArduinoAction.Automatisation
             if(_fanIsOn != IsOn)
             {
                 Server.instance.SendBroadcast(FAN_ACTION, (IsOn ? "1" : "0")).Wait();
-                LogIfDebug("UserTemperature : Fan " + (IsOn ? "On" : "Off"));
+                Log("UserTemperature : Fan " + (IsOn ? "On" : "Off"));
                 _fanIsOn = IsOn;
             }
         }
@@ -213,7 +212,7 @@ namespace PATHServer.ArduinoAction.Automatisation
             if(_HeatingIsOn != IsOn)
             {
                 Server.instance.SendBroadcast(HEATING_ACTION, (IsOn ? "1" : "0")).Wait();
-                LogIfDebug("UserTemperature : Heating " + (IsOn ? "On" : "Off"));
+                Log("UserTemperature : Heating " + (IsOn ? "On" : "Off"));
                 _HeatingIsOn = IsOn;
             }
         }

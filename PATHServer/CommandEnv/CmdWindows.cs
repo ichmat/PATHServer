@@ -11,9 +11,14 @@ namespace PATHServer.CommandEnv
     {
         private const string CMD = "CMD.exe";
 
-        public override string CmdExecution() => CMD;
-
         private readonly List<string> datas = new List<string>();
+
+        public override event DetectedConnexion? OnDetectedConnexion;
+
+        public override bool CreateWIFIDirect(string wifi_interface, string wifi_name, string? mask = null)
+        {
+            throw new NotImplementedException();
+        }
 
         public override string[] GetAllWifiName()
         {
@@ -62,17 +67,22 @@ namespace PATHServer.CommandEnv
             return listWifi.ToArray();
         }
 
-        private void Proc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        public override string? GetConnectedWifi(string @interface)
         {
             throw new NotImplementedException();
         }
 
-        private void Proc_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        public override string[] GetWIFIInterfaces()
         {
-            datas.Add(e.Data);
+            throw new NotImplementedException();
         }
 
-        public override bool TryConnectWifi(string wifi_name)
+        public override bool TryConnectWifi(string @interface, string wifi_name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool TryDisconnectWifi(string @interface)
         {
             throw new NotImplementedException();
         }

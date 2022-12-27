@@ -79,7 +79,7 @@ namespace PATHServer.ArduinoAction
             {
                 string action = event_data[0];
                 string typeStr = event_data[1];
-                if (action == ACTION && IsTypeData(typeStr, out type))
+                if (action == EVENT && IsTypeData(typeStr, out type))
                 {
                     return true;
                 }
@@ -163,7 +163,7 @@ namespace PATHServer.ArduinoAction
                             for(int i = 0; i < arr_int.Length; ++i) 
                             {
                                 int val = Convert.ToInt32(arr_int[i]);
-                                if(val < 0 && val > 255)
+                                if(val < 0 || val > 255)
                                 {
                                     value = null;
                                     return false;

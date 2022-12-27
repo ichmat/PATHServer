@@ -3,15 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PATHServer;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace WebApplicationAPI
 {
     public class Program
     {
-
         public static void Main(string[] args)
         {
+            Server.SetLocalIPAddress();
             var builder = WebApplication.CreateBuilder(args);
 
             IConfiguration configuration = new ConfigurationBuilder()
@@ -26,7 +27,6 @@ namespace WebApplicationAPI
             Server.instance.StartTest().Wait();
 #endif
             builder.Services.AddDbContext<MyDbContext>();
-
             // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -75,8 +75,16 @@ namespace WebApplicationAPI
             app.UseAuthorization();
 
             app.MapControllers();
-
+            IHostApplicationLifetime lifetime = app.Lifetime;
+            // if port "7199" is taken use "netstat -a -o | find "7199"
             app.Run();
+
+            lifetime.ApplicationStopping.Register(ShuttingDown);
+        }
+
+        private static void ShuttingDown()
+        {
+            Server.instance.ShutDown();
         }
 
         private static void _server_OnServerLog(string log)

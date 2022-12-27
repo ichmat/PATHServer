@@ -54,7 +54,7 @@ namespace WebApplicationAPI.Controllers
         {
             bool no_user = _context.Users.Count() == 0;
 
-            if (no_user! && await PathTools.CheckKey(_context, connexionId) == false)
+            if (!no_user && await PathTools.CheckKey(_context, connexionId) == false)
                 return await LogsResult.LogAndResult("user/create - invalid key", TypeLOG.FAIL, connexionId, _context, Unauthorized);
 
             var u = new PATHUser();

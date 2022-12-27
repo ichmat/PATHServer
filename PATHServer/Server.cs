@@ -19,6 +19,7 @@ using PATHServer.ArduinoAction;
 using System.Text.Unicode;
 using Microsoft.EntityFrameworkCore;
 using PATHServer.ArduinoAction.Automatisation;
+using System.Runtime.InteropServices;
 
 namespace PATHServer
 {
@@ -32,16 +33,35 @@ namespace PATHServer
 
         internal ArdCom ardCom;
 
+        private CmdEnvironnement cmdEnv;
+
         public delegate void ServerLog(string log);
 
         public event ServerLog? OnServerLog;
 
+        private static string local_ip = "127.0.0.1";
+
         public Server()
         {
+            IdentifyOS();
             ardCom = new ArdCom();
             ActionIdentifier.Init();
             DataLiveManager.Init();
             UserTemperature.Init();
+            SearchWifi();
+        }
+
+        private void IdentifyOS()
+        {
+            string os = RuntimeInformation.OSDescription.ToLower();
+            if (os.Contains("windows"))
+            {
+                cmdEnv = new CmdWindows();
+            }
+            else
+            {
+                cmdEnv = new CmdLinux();
+            }
         }
 
         public async Task StartTest()
@@ -49,17 +69,57 @@ namespace PATHServer
             await StartMQTTServerTest();
         }
 
-        public static string GetLocalIPAddress()
+        public static void SetLocalIPAddress()
         {
+            List<string> allIp = new List<string>();
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    return ip.ToString();
+                    allIp.Add(ip.ToString());
                 }
             }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            if (allIp.Count == 0)
+            {
+                throw new Exception("No network adapters with an IPv4 address in the system!");
+            }
+
+            if(allIp.Count > 1)
+            {
+                Console.WriteLine("please select local IP : ");
+                for (int i = 0; i < allIp.Count; ++i)
+                {
+                    Console.WriteLine(i.ToString() + " : " + allIp[i]);
+                }
+
+                bool selected = false;
+
+                while (!selected)
+                {
+                    string? input = Console.ReadLine();
+                    try
+                    {
+                        if(input != null)
+                        {
+                            int val = int.Parse(input);
+                            if(val >= 0 && val < allIp.Count)
+                            {
+                                local_ip = allIp[val];
+                                selected = true;
+                                return;
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            local_ip = allIp[0];
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            return local_ip;
         }
 
         public bool IsValidData(InfoTypeData waiting, string actionData, out string? val)
@@ -83,10 +143,18 @@ namespace PATHServer
             SearchAndWaitingClientInfo();
         }
 
-        public void Stop()
+        public void ShutDown()
         {
-            // Dispose Socket connexion
-        }   
+            Console.WriteLine("shutting down ...");
+            UserTemperature.StopThread();
+            if (_mqttServer != null)
+            {
+                _mqttServer.Dispose();
+            }
+            MyDbContext myDbContext = new MyDbContext();
+            myDbContext.WaitSaveChangesAsync().Wait();
+            myDbContext.Dispose();
+        }
 
         private void ConnectToWifi()
         {
@@ -224,8 +292,46 @@ namespace PATHServer
 
         private void SearchWifi()
         {
-            CmdWindows w = new CmdWindows();
-            string[] wifis = w.GetAllWifiName();
+            if(cmdEnv is CmdLinux)
+            {
+                string[] interfaces = cmdEnv.GetWIFIInterfaces();
+                ConsoleLog("current interfaces", interfaces);
+
+                string selectedInterface = interfaces.First();
+                Console.WriteLine("actual interface : " + selectedInterface);
+
+                string? connectedWifi = cmdEnv.GetConnectedWifi(selectedInterface);
+
+                if (connectedWifi != null)
+                {
+                    Console.WriteLine("already connected to : " + connectedWifi + ", try disconnect");
+                    if (cmdEnv.TryDisconnectWifi(selectedInterface))
+                    {
+                        Console.WriteLine("disconnected");
+                    }
+                    else
+                    {
+                        Console.WriteLine("fail disconnected");
+                        return;
+                    }
+                }
+
+                string[] wifis = cmdEnv.GetAllWifiName();
+                ConsoleLog("current wifis", wifis);
+
+
+            }
+        }
+
+        private void ConsoleLog(string title, string[] infos)
+        {
+            Console.WriteLine(title + " : ");
+            Console.WriteLine("------------------");
+            foreach (string i in infos)
+            {
+                Console.WriteLine(i);
+            }
+            Console.WriteLine("");
         }
 
         #endregion

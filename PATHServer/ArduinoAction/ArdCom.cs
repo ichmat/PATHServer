@@ -176,7 +176,7 @@ namespace PATHServer.ArduinoAction
                     string dataType = arrInfos[1];
                     if (!string.IsNullOrWhiteSpace(nodeName))
                     {
-                        if (ArdConverter.IsAction(dataType, out InfoTypeData? type))
+                        if (ArdConverter.IsAction(dataType, out InfoTypeData? typeAction))
                         {
                             // CREATE ActionTrigger
                             ActionTrigger? find = await dbContext.ActionTriggers.FirstOrDefaultAsync(x => x.act_name == nodeName);
@@ -184,7 +184,7 @@ namespace PATHServer.ArduinoAction
                             {
                                 ActionTrigger a = new ActionTrigger();
                                 a.act_name = nodeName;
-                                a.act_type_data = (int)type!;
+                                a.act_type_data = (int)typeAction!;
                                 nodeCreated = true;
                                 await dbContext.ActionTriggers.AddAsync(a);
                             }
