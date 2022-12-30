@@ -13,12 +13,6 @@ namespace PATHServer.CommandEnv
 
         private readonly List<string> datas = new List<string>();
 
-        public override event DetectedConnexion? OnDetectedConnexion;
-
-        public override bool CreateWIFIDirect(string wifi_interface, string wifi_name, string? mask = null)
-        {
-            throw new NotImplementedException();
-        }
 
         public override KNOWN_WIFI[] GetAllKnownWifi()
         {

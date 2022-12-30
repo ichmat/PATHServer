@@ -32,8 +32,6 @@ namespace PATHServer.CommandEnv
          * nmcli connection down id SSID-NAME
          */
 
-        public override event DetectedConnexion? OnDetectedConnexion;
-
         public override string[] GetAllWifiName()
         {
             var result = Cli
@@ -205,12 +203,5 @@ namespace PATHServer.CommandEnv
 
             return allInterfaces.ToArray();
         }
-
-        public override bool CreateWIFIDirect(string wifi_interface, string wifi_name, string? mask = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        
     }
 }

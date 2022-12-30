@@ -10,6 +10,8 @@ namespace WebApplicationAPI
 {
     public class Program
     {
+        public static IHostApplicationLifetime lifetime;
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -74,7 +76,7 @@ namespace WebApplicationAPI
             app.UseAuthorization();
 
             app.MapControllers();
-            IHostApplicationLifetime lifetime = app.Lifetime;
+            lifetime = app.Lifetime;
             // if port "7199" is taken use "netstat -a -o | find "7199"
             app.Run();
 

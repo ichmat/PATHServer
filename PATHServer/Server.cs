@@ -41,6 +41,10 @@ namespace PATHServer
 
         private static string local_ip = "127.0.0.1";
 
+        private const int MILLISEC_WAIT_WIFI = 5000;
+
+        public static bool isDefaultWifi { get; private set; } = false;
+
         public Server()
         {
             IdentifyOS();
@@ -68,6 +72,11 @@ namespace PATHServer
         public async Task StartTest()
         {
             await StartMQTTServerTest();
+        }
+
+        public void SetCredentialWifi(string ssid, string pwd)
+        {
+            cmdEnv.WriteCredentials(ssid, pwd);
         }
 
         private static void SetLocalIPAddress()
@@ -301,6 +310,106 @@ namespace PATHServer
                 string selectedInterface = interfaces.First();
                 Console.WriteLine("actual interface : " + selectedInterface);
 
+                string? connected = cmdEnv.GetConnectedWifi(selectedInterface);
+
+                if(connected != null)
+                {
+                    if(connected == CmdEnvironnement.SSID_Default)
+                        isDefaultWifi = true;
+
+                    Console.WriteLine("already connected to " + connected);
+                    return;
+                }
+
+                KNOWN_WIFI[] kNOWN_WIFIs = cmdEnv.GetAllKnownWifi();
+
+                ConsoleLog(kNOWN_WIFIs);
+
+                bool isConnected = false;
+                bool first = true;
+                cmdEnv.TryGetWifiCredentials(out string saved_ssid, out string saved_password);
+
+                ushort nbTrySavedSSID = 0;
+                ushort maxTry = 3;
+                while (!isConnected)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        Thread.Sleep(MILLISEC_WAIT_WIFI);
+                    }
+
+                    Console.WriteLine("Scanning ...");
+                    string[] wifis = cmdEnv.GetAllWifiName();
+                    bool findSaved = wifis.Any(x => saved_ssid != string.Empty && x == saved_ssid);
+                    IEnumerable<KNOWN_WIFI> finded = kNOWN_WIFIs.Where(x => wifis.Contains(x.ssid));
+                    bool findDefault = wifis.Contains(CmdEnvironnement.SSID_Default);
+                    if (findSaved && nbTrySavedSSID < maxTry)
+                    {
+                        Console.WriteLine("find saved wifi");
+                        Console.Write("try connect \"" + saved_ssid + "\" : ");
+
+                        if (cmdEnv.TryConnectWifi(selectedInterface, saved_ssid))
+                        {
+                            isConnected = true;
+                            Console.Write("success");
+                            Console.WriteLine("");
+                        }
+                        else
+                        {
+                            nbTrySavedSSID++;
+                            Console.Write("fail (remaining attempt : " + (maxTry - nbTrySavedSSID).ToString() + ")");
+                            Console.WriteLine("");
+                        }
+                    }
+                    if(finded.Count() > 0)
+                    {
+                        Console.WriteLine("find khow wifi");
+                        foreach (KNOWN_WIFI wifi in finded)
+                        {
+                            Console.Write("try connect \"" + wifi.ssid + "\" : " );
+
+                            if(cmdEnv.TryConnectWifi(selectedInterface, wifi.ssid))
+                            {
+                                isConnected = true;
+                                Console.Write("success");
+                                Console.WriteLine("");
+                                break;
+                            }
+                            else
+                            {
+                                Console.Write("fail");
+                                Console.WriteLine("");
+                            }
+                        }
+                    }
+                    if (findDefault)
+                    {
+                        Console.Write("try connect default wifi \"" + CmdEnvironnement.SSID_Default + "\" : ");
+
+                        if (cmdEnv.TryConnectWifi(selectedInterface, CmdEnvironnement.SSID_Default))
+                        {
+                            isConnected = true;
+                            isDefaultWifi = true;
+                            Console.Write("success");
+                            Console.WriteLine("");
+                        }
+                        else
+                        {
+                            Console.Write("fail");
+                            Console.WriteLine("");
+                        }
+                    }
+                    if(!findSaved && finded.Count() == 0 && !findDefault)
+                    {
+                        Console.WriteLine("scanning fail");
+                    }
+                }
+
+                /*
                 KNOWN_WIFI[] _WIFIs = cmdEnv.GetAllKnownWifi();
                 ConsoleLog(_WIFIs);
                 bool isConnectedWifi = _WIFIs.Any(x => x.connected && x.@interface! == selectedInterface);
@@ -344,7 +453,7 @@ namespace PATHServer
                     }
                 }
 
-                Console.WriteLine("no known wifi detected");
+                Console.WriteLine("no known wifi detected");*/
             }
         }
 

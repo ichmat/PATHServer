@@ -9,6 +9,11 @@ namespace PATHServer.CommandEnv
 {
     public abstract class CmdEnvironnement
     {
+        private const string _wifi_credential = "wcred";
+
+        public const string SSID_Default = "PATHServer";
+        public const string PWD_Default = "PATHServer";
+
         public abstract string[] GetAllWifiName();
 
         public abstract KNOWN_WIFI[] GetAllKnownWifi();
@@ -23,11 +28,30 @@ namespace PATHServer.CommandEnv
 
         public abstract string[] GetWIFIInterfaces();
 
-        public abstract bool CreateWIFIDirect(string wifi_interface, string wifi_name, string? mask = null);
+        public bool TryGetWifiCredentials(out string ssid, out string pwd)
+        {
+            if(File.Exists(_wifi_credential))
+            {
+                try
+                {
+                    string[] outputs = File.ReadAllLines(_wifi_credential);
+                    ssid = outputs[0].Split(':')[1];
+                    pwd = outputs[1].Split(':')[1];
+                    return true;
+                }
+                catch { }
+            }
+            ssid = string.Empty;
+            pwd = string.Empty;
+            return false;
+        }
 
-        public delegate void DetectedConnexion(string id);
-
-        public abstract event DetectedConnexion? OnDetectedConnexion;
+        public void WriteCredentials(string ssid, string pwd)
+        {
+            string txt = "ssid:" + ssid + Environment.NewLine;
+            txt += "pwd:"+pwd;
+            File.WriteAllText(_wifi_credential, txt);
+        }
 
         public static string NormalizeWhiteSpace(string input)
         {
